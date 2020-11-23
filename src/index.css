@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap');
+
+body {
+  background-color: #b7eafd;
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 600;
+  color: #12606d;
+}
+
+h1 {
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  monospace;
+}
+
+.ant-layout {
+    background-color: #b7eafd;
+}
+
+/*HEADER*/
+
+.ant-layout-header {
+    background-color: #b7eafd;
+    line-height: 100px;
+    padding: 0 72px;
+    height: 100px;
+    margin-top: 20px;
+}
+
+.ant-layout-header h1 {
+    color: #12606d;
+    letter-spacing: 1px;
+}
+
+/*CONTENT*/
+
+.ant-layout-content {
+    padding: 0 72px;
+}
+
+.ant-layout-content h1 {
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.landing {
+  margin-top: 15px;
+}
+
+.left-section {
+  max-width: 530px;
+  width: 100%;
+}
+
+/*BUTTON*/
+
+.ant-btn-primary {
+  background-color: #37aabc;
+  border-radius: 0;
+  border: 0;
+}
+
+.ant-btn-primary:hover {
+  opacity: 0.8;
+  background-color: #37aabc;
+}
+
+.ant-btn-primary:active, .ant-btn-primary:focus {
+  background-color: #37aabc;
+}
+
+.ant-btn > .anticon + span, .ant-btn > span + .anticon {
+  margin-left: 12px;
+}
