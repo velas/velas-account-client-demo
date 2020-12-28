@@ -87,3 +87,36 @@ code {
 .ant-btn > .anticon + span, .ant-btn > span + .anticon {
   margin-left: 12px;
 }
+
+.right-section {
+  width: 70%;
+  position: absolute;
+  right: 0;
+  top: 20%;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.right-section img {
+  width: 50%;
+  -moz-transform: scale(-1, 1);
+  -o-transform: scale(-1, 1);
+  -webkit-transform: scale(-1, 1);
+  transform: scale(-1, 1);
+}
+
+@media (max-width: 1300px) {
+  .right-section {
+    width: 50%;
+  }
+
+  .right-section img {
+    width: 85%;
+  }
+}
+
+@media (max-width: 950px) {
+  .right-section {
+    display: none;
+  }
+}
