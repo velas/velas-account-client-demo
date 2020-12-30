@@ -1,7 +1,7 @@
 name: Build-Deploy-devnet
 on:
   push:
-    branches: [feature/github_actions]
+    branches: [develop]
 
 jobs:
   docker-build:
