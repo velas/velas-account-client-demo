@@ -25,10 +25,7 @@ jobs:
         env:
           BUILD_ENV: ${{ secrets.BUILD_ENV }}
         run: |
-          echo $BUILD_ENV > .env
-          ls -la
-          pwd
-          cat .env
+          echo $BUILD_ENV|base64 -d > .env
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
