@@ -67,6 +67,10 @@ code {
   width: 100%;
 }
 
+.left-section h1 {
+  color:#434d11;
+}
+
 /*BUTTON*/
 
 .ant-btn-primary {
