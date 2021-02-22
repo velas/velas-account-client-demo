@@ -39,39 +39,21 @@ class Demo extends Component {
 
     direct_login_store_key = async () => {
         this.setState({loading: true});
-        // const operational_address = agent.provider.client.base64ToOperationalAddress(this.state.interaction.op_key);
+        const login_data = !this.state.interaction.sessions.length
+            ? {
+                mergeWithLastSubmission: false,
+                login: "0x61Cab20F95b0054e2dbEe43eaF2BcF5D1BbA53b4",
+                consent: { rejectedScopes: []},
+                merge: true,
+            }
+            : {
+                mergeWithLastSubmission: false,
+                select_account: this.state.interaction.sessions[0],
+            }
 
-        // const data = await agent.provider.client.addOperationalAddressData({
-        //     owner_private:   "c687d7f5a80a3c5ce6481c01927a1c2f5857b494f7197e71a5dcd26371949ca0",
-        //     owner_address:   "0x5ea9380e12d91d7326ebd7f0c09a2a359a0c1f1f",
-        //     account_address: "0x61Cab20F95b0054e2dbEe43eaF2BcF5D1BbA53b4",
-        //     operational_address,
-        // });
-
-        // console.log(data)
-
-        // const { error, id: tx } = await backend.addOperationalAddress(data, values.address);
-
-        // if (error) {
-        //     this.setState({ error, loading: false });
-        // } else {
-
-            const login_data = !this.state.interaction.sessions.length
-                ? {
-                    mergeWithLastSubmission: false,
-                    login: "0x61Cab20F95b0054e2dbEe43eaF2BcF5D1BbA53b4",
-                    consent: { rejectedScopes: []},
-                    merge: true,
-                }
-                : {
-                    mergeWithLastSubmission: false,
-                    select_account: this.state.interaction.sessions[0],
-                }
-
-            agent.finishInteraction(this.state.interaction.id, login_data)
-            .then( (r) => this.responseHandle(r))
-            .catch((e) => {console.log(e)})
-        //}
+        agent.finishInteraction(this.state.interaction.id, login_data)
+        .then( (r) => this.responseHandle(r))
+        .catch((e) => {console.log(e)})
     }
 
     direct_login = () => client_direct_mode.authorize({}, (err, authResult) => {
@@ -144,7 +126,6 @@ class Demo extends Component {
             </div>
         )
     };
-
 };
 
 export default Demo
