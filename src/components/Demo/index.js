@@ -1,11 +1,15 @@
+import { SystemProgram, PublicKey, Transaction, Connection } from 'velas-solana-web3';
+
 import React, { Component } from "react";
 import ReactJson from 'react-json-view';
-import { Spin } from 'antd';
+import { Spin, message, Button } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
 import { Login } from '../';
 import { client_redirect_mode, client_popup_mode, client_direct_mode, agent }  from '../../functions/auth';
-import Error     from '../../components/Error';
+
+import Error from '../../components/Error';
+import StakingComponent from '../../components/StakingComponent';
 
 import './index.css';
 
@@ -15,16 +19,19 @@ class Demo extends Component {
 
     state = {
         interaction: false,
-        account: false,
+        authorization: false,
         loading: true,
         error: false,
+        transaction: {
+            lamports: 10000000000000000, //10000000000000000
+        }
     };
 
     responseHandle = (response) => {
         if (response.redirect) {
             client_direct_mode.parseHash((err, authResult) => {
                 if (authResult && authResult.access_token_payload) {
-                    this.setState({ account: authResult, loading: false });
+                    this.setState({ authorization: authResult, loading: false });
                 } else if (err) {
                     this.setState({ error: err.description, loading: false });
                 } else {
@@ -42,7 +49,7 @@ class Demo extends Component {
         const login_data = !this.state.interaction.sessions.length
             ? {
                 mergeWithLastSubmission: false,
-                login: "0x61Cab20F95b0054e2dbEe43eaF2BcF5D1BbA53b4",
+                login: "9HpUb8bCUyUVZVmVRzceS5Bcp2daFbTQJYbX2Tr887Mw",
                 consent: { rejectedScopes: []},
                 merge: true,
             }
@@ -66,12 +73,40 @@ class Demo extends Component {
         };
     });
 
+    transaction = async () => {
+        const { authorization } = this.state;
+
+        const instruction = SystemProgram.transfer({
+            fromPubkey: new PublicKey(authorization.access_token_payload.ses),
+            toPubkey:   new PublicKey(authorization.access_token_payload.ses),
+            lamports:   this.state.transaction.lamports,
+        });
+
+        const connection = new Connection(process.env.REACT_APP_NODE_HOST, 'singleGossip');
+
+        const { blockhash: recentBlockhash } = await connection.getRecentBlockhash();
+
+        const transaction = new Transaction({ 
+            recentBlockhash,
+            feePayer: new PublicKey(authorization.access_token_payload.ses),
+        }).add(instruction);
+        
+        client_redirect_mode.sendTransaction( authorization.access_token, { transaction: transaction.serializeMessage() }, (err, result) => {
+            console.log(err);
+            if (err) {
+                message.error({ content: err.description, duration: 5 });
+            } else {
+                message.success({ content: result.signature, duration: 5 });
+            };
+        });
+    };
+
     redirect_login = () => client_redirect_mode.authorize();
 
     popup_login = () => client_popup_mode.authorize({}, (err, authResult) => {
 
         if (authResult && authResult.access_token_payload) {
-            this.setState({ account: authResult, loading: false });
+            this.setState({ authorization: authResult, loading: false });
         } else if (err) {
             this.setState({ error: err.description, loading: false });
         } else {
@@ -85,7 +120,7 @@ class Demo extends Component {
         client_redirect_mode.parseHash((err, authResult) => {
 
             if (authResult && authResult.access_token_payload) {
-                this.setState({ account: authResult, loading: false });
+                this.setState({ authorization: authResult, loading: false });
             } else if (err) {
                 this.setState({ error: err.description, loading: false });
             } else {
@@ -97,32 +132,49 @@ class Demo extends Component {
     };
 
     render() {
-        const { error, loading, account, interaction } = this.state;
+        const { error, loading, authorization, interaction, transaction } = this.state;
         return (
             <div className="demo">
                 { error && <Error error={error} /> }
                 { !error && loading && <Spin indicator={antIcon} /> }
-                { !error && !loading && !account && !interaction &&
+                { !error && !loading && !authorization && !interaction &&
                     <div>
                         <Login mode='Popup'    login={this.popup_login}/>
                         <Login mode='Redirect' login={this.redirect_login}/>
                         <Login mode='Direct'   login={this.direct_login}/>
                     </div>
                 }
-                { !error && !loading && account &&
+                { !error && !loading && authorization &&
                     <div>
-                        <h2>Success login</h2>
-                        <ReactJson  displayObjectSize={false} displayDataTypes={false} theme='railscasts' src={account} />
+                        {/* <h2>Success login</h2>
+                        <ReactJson  displayObjectSize={false} displayDataTypes={false} theme='railscasts' src={authorization} /> */}
+
+                        <StakingComponent authorization={authorization} client={client_redirect_mode}/>
                     </div>
                 }
 
-                { !error && !loading && interaction && !account &&
+                { !error && !loading && interaction && !authorization &&
                     <div>
                         <h2>Interaction details</h2>
                         <ReactJson  displayObjectSize={false} displayDataTypes={false} theme='railscasts' src={interaction} />
                         <Login mode='Interaction' login={this.direct_login_store_key}/>
                     </div>
                 }
+
+                {/* { !error && !loading && authorization &&
+                    <div>
+                        <br/>
+                        <h2>Transfer Transaction:</h2>
+                        <ReactJson  displayObjectSize={false} displayDataTypes={false} theme='railscasts' src={
+                            transaction
+                        } />
+                        <br/>
+                        <Button onClick={this.transaction} className="login-button" type="primary"  size={'large'}>
+                            Transaction
+                        </Button>
+                        <br/><br/><br/>
+                    </div>
+                } */}
             </div>
         )
     };

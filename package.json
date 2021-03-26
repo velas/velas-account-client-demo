@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "velas-solana-web3": "0.1.0",
+    "bs58": "^4.0.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -11,9 +13,8 @@
     "react-dom": "^16.14.0",
     "react-json-view": "^1.19.1",
     "react-scripts": "^3.4.4",
-    "vortex-account-client-js": "0.0.7",
-    "vortex-account-webagent": "0.0.15",
-    "web3": "1.3.0"
+    "vortex-account-client-js": "0.1.0",
+    "vortex-account-webagent": "0.1.5"
   },
   "scripts": {
     "start": "react-scripts start",
