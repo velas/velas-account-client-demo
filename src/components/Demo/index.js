@@ -139,9 +139,9 @@ class Demo extends Component {
                 { !error && loading && <Spin indicator={antIcon} /> }
                 { !error && !loading && !authorization && !interaction &&
                     <div>
-                        <Login mode='Popup'    login={this.popup_login}/>
+                        {/* <Login mode='Popup'    login={this.popup_login}/> */}
                         <Login mode='Redirect' login={this.redirect_login}/>
-                        <Login mode='Direct'   login={this.direct_login}/>
+                        {/* <Login mode='Direct'   login={this.direct_login}/> */}
                     </div>
                 }
                 { !error && !loading && authorization &&
