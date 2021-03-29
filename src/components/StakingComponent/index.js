@@ -76,15 +76,18 @@ class StakingComponent extends Component {
                 { !error && !loading && <div>
                     <h2>Account Info:</h2>
                     <p>your address:  { userinfo.account_key }</p>
-                    <p>your balacnce: { userinfo.balance }</p>
+                    <p>your Account balacnce: { userinfo.balance }</p>
+                    <h2>Session Info:</h2>
+                    <p>your session address: { userinfo.session.operational_key}</p>
+                    <p>your Session key balacnce: { userinfo.session.balance}</p>
                     <h2>Your staking accounts:</h2>
                     <p>{staking_accounts}</p>
 
-                    <Button onClick={this.createAccount} type="primary"  size={'large'}>
+                    <Button onClick={this.createAccount} type="primary"  size={'large'}  disabled={true}>
                         Create Account
                     </Button>
 
-                    <Button onClick={this.updateStakingAccounts} type="primary"  size={'large'}>
+                    <Button onClick={this.updateStakingAccounts} type="primary"  size={'large'} disabled={true}>
                         Update Accounts
                     </Button>
                 </div> }
