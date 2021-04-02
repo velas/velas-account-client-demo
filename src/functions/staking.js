@@ -25,15 +25,12 @@ Staking.prototype.getAccountPublickKey = function() {
 
 Staking.prototype.createAccount = async function() {
 
-    console.log("start create");
-
     try {
-
+        const rent = await this.connection.getMinimumBalanceForRentExemption(200);
         const fromPubkey = this.getAccountPublickKey();
         const authorized = new Authorized(fromPubkey, fromPubkey);
-        const lamports   = 1000000000;
+        const lamports   = (10000 * 1000000000) + rent;
         const seed       = '1';
-
 
         const stakeAccountWithSeed = await PublicKey.createWithSeed(
             fromPubkey,
@@ -53,14 +50,10 @@ Staking.prototype.createAccount = async function() {
             stakePubkey: stakeAccountWithSeed,
         });
 
-        console.log(transaction);
+        const data = await this.connection.getRecentBlockhash();
 
-        const { blockhash: recentBlockhash } = await this.connection.getRecentBlockhash();
-
-        transaction.recentBlockhash = recentBlockhash;
+        transaction.recentBlockhash = data.blockhash;
         transaction.feePayer = fromPubkey;
-
-        console.log("send");
         
         this.client.sendTransaction( this.authorization.access_token, { transaction: transaction.serializeMessage() }, (err, result) => {
             console.log(err, result);
@@ -73,23 +66,42 @@ Staking.prototype.createAccount = async function() {
 
         console.log("after send");
 
-
-
     } catch(_) {
-
         console.log(_)
-
     };
 
     return [];
 };
 
 
+Staking.prototype.checkSeed = async function(base58PublicKey) {
+    const fromPubkey = this.getAccountPublickKey();
 
+    for (let i = 0; i < 100; i++) {
+        const stakeAccountWithSeed = await PublicKey.createWithSeed(
+            fromPubkey,
+            i.toString(),
+            StakeProgram.programId,
+        );
+
+        if (stakeAccountWithSeed.toBase58() === base58PublicKey) return `seed:${i}`;
+    };
+    return base58PublicKey.slice(0,6);
+}
 
 Staking.prototype.getStakingAccounts = async function(base58PublicKey) {
-    const programId = StakeProgram.programId;
-    const accounts = await this.connection.getParsedProgramAccounts(programId);
+    let programId = StakeProgram.programId;
+    let accounts = await this.connection.getParsedProgramAccounts(programId);
+
+    accounts = accounts.filter(item => {
+        if (item?.account?.data?.parsed?.info?.meta?.authorized?.staker === base58PublicKey) return true;
+        return false;
+    });
+
+    for (var i in accounts){
+        accounts[i].seed = await this.checkSeed(accounts[i].pubkey.toBase58());
+    }
+
     console.log("getStakingAccounts", accounts);
 
     return [];

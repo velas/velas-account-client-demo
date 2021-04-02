@@ -24,7 +24,7 @@ class StakingComponent extends Component {
     updateStakingAccounts = async () => {
         try {
             this.setState({ 
-                staking_accounts: await this.state.staking.getStakingAccounts(this.state.userinfo.account_key),
+                staking_accounts: await this.state.staking.getStakingAccounts(this.state.userinfo.session.operational_key),
             });
         } catch(e) {
             this.setState({
@@ -83,11 +83,11 @@ class StakingComponent extends Component {
                     <h2>Your staking accounts:</h2>
                     <p>{staking_accounts}</p>
 
-                    <Button onClick={this.createAccount} type="primary"  size={'large'}  disabled={true}>
+                    <Button onClick={this.createAccount} type="primary"  size={'large'}>
                         Create Account
                     </Button>
 
-                    <Button onClick={this.updateStakingAccounts} type="primary"  size={'large'} disabled={true}>
+                    <Button onClick={this.updateStakingAccounts} type="primary"  size={'large'}>
                         Update Accounts
                     </Button>
                 </div> }
