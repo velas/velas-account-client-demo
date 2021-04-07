@@ -63,7 +63,6 @@ code {
 }
 
 .left-section {
-  max-width: 540px;
   width: 100%;
 }
 
@@ -78,6 +77,7 @@ code {
   border-radius: 0;
   border: 0;
   margin-right: 10px;
+  margin-bottom: 10px;
 }
 
 .ant-btn-primary:hover {
@@ -94,6 +94,7 @@ code {
 }
 
 .right-section {
+  display: none;
   width: 70%;
   position: absolute;
   right: 0;
