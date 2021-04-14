@@ -1,6 +1,6 @@
-import { SystemProgram, PublicKey, Transaction, Connection, TransactionInstruction } from 'velas-solana-web3';
+import { SystemProgram, PublicKey, Transaction, Connection } from '@velas/solana-web3';
 
-import BN from 'bn.js'; 
+//import BN from 'bn.js'; 
 
 import React, { Component } from "react";
 import ReactJson from 'react-json-view';
@@ -25,7 +25,7 @@ class Demo extends Component {
         loading: true,
         error: false,
         transaction: {
-            lamports: 1, //10000000000000000
+            lamports: 9990000097712120, //10000000000000000
         }
     };
 
@@ -186,7 +186,7 @@ class Demo extends Component {
                     </div>
                 }
 
-                { !error && !loading && authorization &&
+                {/* { !error && !loading && authorization &&
                     <div>
                         <br/>
                         <h2>Transfer Transaction:</h2>
@@ -204,7 +204,7 @@ class Demo extends Component {
                         </Button>
                         <br/><br/><br/>
                     </div>
-                }
+                } */}
             </div>
         )
     };
