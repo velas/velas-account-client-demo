@@ -197,6 +197,8 @@ class StakingComponent extends Component {
 
         try {
             const { userinfo, error, description } = await this.state.staking.userinfo();
+
+            console.log("userinfo",userinfo);
  
             if ( error ) throw new Error(description);
             this.setState({ userinfo });

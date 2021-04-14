@@ -1,4 +1,4 @@
-import { Connection, StakeProgram, Authorized, PublicKey, Lockup } from 'velas-solana-web3';
+import { Connection, StakeProgram, Authorized, PublicKey, Lockup, Account, SystemProgram } from '@velas/solana-web3';
 
 function Staking(options) {
 
@@ -17,7 +17,7 @@ function Staking(options) {
 };
 
 Staking.prototype.getAccountPublickKey = function() {
-    return new PublicKey(this.authorization.access_token_payload.ses) // operational_key for test
+    return new PublicKey(this.authorization.access_token_payload.sub) // operational_key for test
 };
 
 Staking.prototype.getStakeActivation = async function(address) {

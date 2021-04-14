@@ -13,9 +13,9 @@
     "react-dom": "^16.14.0",
     "react-json-view": "^1.19.1",
     "react-scripts": "^3.4.4",
-    "velas-solana-web3": "0.1.0",
-    "vortex-account-client-js": "0.1.0",
-    "vortex-account-webagent": "0.1.5"
+    "@velas/solana-web3": "0.1.0",
+    "vortex-account-client-js": "0.1.1",
+    "@velas/account-agent": "0.1.2"
   },
   "scripts": {
     "start": "react-scripts start",

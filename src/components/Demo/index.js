@@ -1,4 +1,4 @@
-import { SystemProgram, PublicKey, Transaction, Connection } from 'velas-solana-web3';
+import { SystemProgram, PublicKey, Transaction, Connection } from '@velas/solana-web3';
 
 //import BN from 'bn.js'; 
 
