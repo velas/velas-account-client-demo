@@ -159,12 +159,12 @@ class StakingComponent extends Component {
 
     createAccount = async () => {
         this.setState({ userinfo: 'loading', accounts: 'loading', validators: 'loading' });
-        const { signature, error, description } = await this.state.staking.createAccount();
+        const { signature, error, description } = await this.state.staking.createAccount(10000);
 
         if (error) {
-            message.error(description, 4);
+            message.error(description, 8);
         } else {
-            message.success(signature, 4);
+            message.success(signature, 8);
         };
 
         this.updateStakingAccounts();
@@ -235,10 +235,10 @@ class StakingComponent extends Component {
                 { !error && userinfo !== 'loading' && <div>
                     <h2>Account Info:</h2>
                     <p>your address:  { userinfo.account_key }</p>
-                    <p>your Account balacnce: { userinfo.balance }</p>
+                    <p>your Account balacnce: <b>{ Math.round((userinfo.balance / 1000000000) * 100) / 100} SOL</b> ({ userinfo.balance })</p>
                     <h2>Session Info:</h2>
                     <p>your session address: { userinfo.session.operational_key}</p>
-                    <p>your Session key balacnce: { userinfo.session.balance}</p>
+                    <p>your Session key balacnce: <b>{ Math.round((userinfo.session.balance / 1000000000) * 100) / 100} SOL</b> ({ userinfo.session.balance})</p>
 
                     { accounts === 'loading' ? <Spin  indicator={antIcon}/> : 
                         <>

@@ -1,5 +1,5 @@
-.demo {
-    margin-top: 50px;
+.demo h3 {
+    margin-bottom: 20px;
 }
 
 .variable-value > div {
@@ -9,4 +9,12 @@
 
 .object-key-val {
     padding: 20px;
+}
+
+.ant-checkbox-group {
+    margin-bottom: 15px !important;
+}
+
+.ant-checkbox-group > label{
+    display: flex;
 }

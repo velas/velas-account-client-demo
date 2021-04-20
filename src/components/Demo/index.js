@@ -1,10 +1,7 @@
-import { SystemProgram, PublicKey, Transaction, Connection } from '@velas/solana-web3';
-
-//import BN from 'bn.js'; 
 
 import React, { Component } from "react";
 import ReactJson from 'react-json-view';
-import { Spin, message, Button } from 'antd';
+import { Spin, Checkbox } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
 import { Login } from '../';
@@ -12,10 +9,18 @@ import { client_redirect_mode, client_popup_mode, client_direct_mode, agent }  f
 
 import Error from '../../components/Error';
 import StakingComponent from '../../components/StakingComponent';
+import TransferComponent from '../../components/TransferComponent';
 
 import './index.css';
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24, color: '#000000', }} spin />;
+
+const CheckboxGroup = Checkbox.Group;
+
+const plainOptions = [
+    'openid',
+    'VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11',
+];
 
 class Demo extends Component {
 
@@ -24,9 +29,8 @@ class Demo extends Component {
         authorization: false,
         loading: true,
         error: false,
-        transaction: {
-            lamports: 9990000097712120, //10000000000000000
-        }
+        scope: [],
+        transfer: true,
     };
 
     responseHandle = (response) => {
@@ -75,58 +79,7 @@ class Demo extends Component {
         };
     });
 
-    transaction = async () => {
-        const { authorization } = this.state;
-
-        const instruction = SystemProgram.transfer({
-            fromPubkey: new PublicKey(authorization.access_token_payload.ses),
-            toPubkey:   new PublicKey(process.env.REACT_APP_BACKEND_ACCOUNT),
-            lamports:   this.state.transaction.lamports,
-        });
-
-        // const vaccountPublicKey = new PublicKey(authorization.access_token_payload.sub);
-        // const data = await agent.provider.client.account.getData(vaccountPublicKey);
-
-        // console.log("data", data);
-
-        // const transfer = new TransactionInstruction({
-        //     programId: new PublicKey(process.env.REACT_APP_ACCOUNT_CONRACT),
-        //     keys: [
-        //         { pubkey: vaccountPublicKey, isSigner: false, isWritable: true },
-        //         { pubkey: data.owner_current_storage, isSigner: false, isWritable: false },
-        //         { pubkey: data.operation_current_storage, isSigner: false, isWritable: false },
-        //         { pubkey: new PublicKey("EgJX7GpswpA8z3qRNuzNTgKKjPmw1UMfh5xQjFeVBqAK"), isSigner: false, isWritable: true },
-        //         { pubkey: new PublicKey("SysvarRent111111111111111111111111111111111"), isSigner: false, isWritable: false },
-        //         { pubkey: new PublicKey("11111111111111111111111111111111"), isSigner: false, isWritable: false },
-          
-        //         { pubkey: new PublicKey(authorization.access_token_payload.ses), isSigner: true, isWritable: false },
-        //     ],
-        //     data: Buffer.from(Uint8Array.of(6, ...new BN(100).toArray("le", 8)))
-        // })
-
-        const connection = new Connection(process.env.REACT_APP_NODE_HOST, 'singleGossip');
-
-        const { blockhash: recentBlockhash } = await connection.getRecentBlockhash();
-
-        const transaction = new Transaction({
-            recentBlockhash,
-            feePayer: new PublicKey(authorization.access_token_payload.ses),
-        }).add(instruction);
-        
-        this.setState({loading: true})
-        client_redirect_mode.sendTransaction( authorization.access_token, { transaction: transaction.serializeMessage() }, (err, result) => {
-            console.log(err);
-            if (err) {
-                this.setState({loading: false})
-                message.error({ content: err.description, duration: 5 });
-            } else {
-                this.setState({loading: false})
-                message.success({ content: result.signature, duration: 5 });
-            };
-        });
-    };
-
-    redirect_login = () => client_redirect_mode.authorize();
+    redirect_login = () => client_redirect_mode.authorize({ scope: this.state.scope.join(' ') });
 
     popup_login = () => client_popup_mode.authorize({}, (err, authResult) => {
 
@@ -143,7 +96,6 @@ class Demo extends Component {
 
     componentDidMount() {
         client_redirect_mode.parseHash((err, authResult) => {
-
             if (authResult && authResult.access_token_payload) {
                 this.setState({ authorization: authResult, loading: false });
             } else if (err) {
@@ -156,55 +108,34 @@ class Demo extends Component {
         });
     };
 
+    onChange = (scope) => this.setState({scope});
+
     render() {
-        const { error, loading, authorization, interaction, transaction } = this.state;
+        const { error, loading, authorization, interaction, scope, transfer } = this.state;
         return (
             <div className="demo">
-                { error && <Error error={error} /> }
+                {  error && <Error error={error} /> }
                 { !error && loading && <Spin indicator={antIcon} /> }
-                { !error && !loading && !authorization && !interaction &&
-                    <div>
-                        {/* <Login mode='Popup'    login={this.popup_login}/> */}
-                        <Login mode='Redirect' login={this.redirect_login}/>
-                        {/* <Login mode='Direct'   login={this.direct_login}/> */}
-                    </div>
-                }
-                { !error && !loading && authorization &&
-                    <div>
-                        {/* <h2>Success login</h2>
-                        <ReactJson  displayObjectSize={false} displayDataTypes={false} theme='railscasts' src={authorization} /> */}
+                { !error && !loading && !authorization && !interaction && <div>
+                    <h1>Try a demo</h1>
+                    <h3>See how <b>Velas Account</b> works and helps you improve the safety of your customers with a seamless experience</h3>
+                    <p><b>Login with scopes:</b></p>
+                    <CheckboxGroup options={plainOptions} value={scope} onChange={this.onChange} />
+                    <Login mode='Redirect' login={this.redirect_login}/>
+                </div> }
 
-                        <StakingComponent authorization={authorization} client={client_redirect_mode}/>
-                    </div>
-                }
+                { !error && !loading && authorization && <div>
+                    { transfer 
+                        ? <TransferComponent authorization={authorization} client={client_redirect_mode}/>
+                        : <StakingComponent  authorization={authorization} client={client_redirect_mode}/>
+                    }
+                </div> }
 
-                { !error && !loading && interaction && !authorization &&
-                    <div>
-                        <h2>Interaction details</h2>
-                        <ReactJson  displayObjectSize={false} displayDataTypes={false} theme='railscasts' src={interaction} />
-                        <Login mode='Interaction' login={this.direct_login_store_key}/>
-                    </div>
-                }
-
-                {/* { !error && !loading && authorization &&
-                    <div>
-                        <br/>
-                        <h2>Transfer Transaction:</h2>
-                        <ReactJson  displayObjectSize={false} displayDataTypes={false} theme='railscasts' src={
-                            {
-                                from: authorization.access_token_payload.ses,
-                                to: process.env.REACT_APP_BACKEND_ACCOUNT,
-                                lamports: transaction.lamports,
-
-                            }
-                        } />
-                        <br/>
-                        <Button onClick={this.transaction} className="login-button" type="primary"  size={'large'}>
-                            Transaction
-                        </Button>
-                        <br/><br/><br/>
-                    </div>
-                } */}
+                { !error && !loading && interaction && !authorization && <div>
+                    <h2>Interaction details</h2>
+                    <ReactJson  displayObjectSize={false} displayDataTypes={false} theme='railscasts' src={interaction} />
+                    <Login mode='Interaction' login={this.direct_login_store_key}/>
+                </div> }
             </div>
         )
     };
