@@ -49,11 +49,11 @@ class StakingComponent extends Component {
             key: 'stakes',
             dataIndex: 'stakes',
             render: (record) => (
-                <>
+                <div>
                     { record.map((item) => {
                       return <Button key={item.key}>{item.seed}</Button>
                     } )}
-                </>
+                </div>
             ),
         },
     ];
@@ -96,7 +96,7 @@ class StakingComponent extends Component {
             title: 'Action',
             key: 'action',
             render: (text, record) => (
-                <>
+                <div>
                     { record.status === 'Not delegated' && <Button onClick={() => this.handleDelegate(record.address)}>Delegate</Button> }
                     { record.status === 'Activating'    && <Button onClick={() => this.handleUndelegate(record.address)}>Undelegate</Button> }
                     { record.status === 'Delegated'     && <Button onClick={() => this.handleUndelegate(record.address)}>Undelegate</Button> }
@@ -104,7 +104,7 @@ class StakingComponent extends Component {
 
                     { record.status === 'Not delegated' && <Button onClick={() => this.handleWithdraw(record.address)}>Withdraw</Button> }
                     { record.status !== 'Not delegated' && <Button disabled={true} onClick={() => this.handleWithdraw(record.address)}>Withdraw</Button> }
-                </>
+                </div>
             ),
         },
     ];
@@ -159,12 +159,12 @@ class StakingComponent extends Component {
 
     createAccount = async () => {
         this.setState({ userinfo: 'loading', accounts: 'loading', validators: 'loading' });
-        const { signature, error, description } = await this.state.staking.createAccount();
+        const { signature, error, description } = await this.state.staking.createAccount(10000);
 
         if (error) {
-            message.error(description, 4);
+            message.error(description, 8);
         } else {
-            message.success(signature, 4);
+            message.success(signature, 8);
         };
 
         this.updateStakingAccounts();
@@ -235,13 +235,13 @@ class StakingComponent extends Component {
                 { !error && userinfo !== 'loading' && <div>
                     <h2>Account Info:</h2>
                     <p>your address:  { userinfo.account_key }</p>
-                    <p>your Account balacnce: { userinfo.balance }</p>
+                    <p>your Account balacnce: <b>{ Math.round((userinfo.balance / 1000000000) * 100) / 100} VLX</b> ({ userinfo.balance })</p>
                     <h2>Session Info:</h2>
                     <p>your session address: { userinfo.session.operational_key}</p>
-                    <p>your Session key balacnce: { userinfo.session.balance}</p>
+                    <p>your Session key balacnce: <b>{ Math.round((userinfo.session.balance / 1000000000) * 100) / 100} VLX</b> ({ userinfo.session.balance})</p>
 
                     { accounts === 'loading' ? <Spin  indicator={antIcon}/> : 
-                        <>
+                        <div>
                             <h2>Your staking accounts:</h2>
                             <Button onClick={this.createAccount} type="primary"  size={'large'}>
                                 Create Account
@@ -255,7 +255,7 @@ class StakingComponent extends Component {
 
                             <h2>Validators:</h2>
                             <Table columns={this.columns_validators} dataSource={validators} />
-                        </>
+                        </div>
                     }
                 </div> }
             </div>
