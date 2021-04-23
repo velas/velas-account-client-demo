@@ -6,16 +6,18 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "@velas/account-agent": "0.1.2",
+    "@velas/account-client": "0.1.0",
+    "@velas/solana-web3": "0.1.0",
     "antd": "^4.7.2",
     "bn.js": "^5.2.0",
     "bs58": "^4.0.1",
+    "mobx": "6.2.0",
+    "mobx-react": "7.1.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-json-view": "^1.19.1",
-    "react-scripts": "^3.4.4",
-    "@velas/solana-web3": "0.1.0",
-    "vortex-account-client-js": "0.1.1",
-    "@velas/account-agent": "0.1.2"
+    "react-scripts": "^3.4.4"
   },
   "scripts": {
     "start": "react-scripts start",

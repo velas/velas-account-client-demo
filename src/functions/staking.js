@@ -1,4 +1,6 @@
-import { Connection, StakeProgram, Authorized, PublicKey, Lockup, Account, SystemProgram } from '@velas/solana-web3';
+import { web3 }  from '../functions/auth';
+
+const { Connection, StakeProgram, Authorized, PublicKey, Lockup, VelasAccountProgram } = web3;
 
 function Staking(options) {
 
@@ -17,7 +19,11 @@ function Staking(options) {
 };
 
 Staking.prototype.getAccountPublickKey = function() {
-    return new PublicKey(this.authorization.access_token_payload.sub) // operational_key for test
+    return new PublicKey(this.authorization.access_token_payload.sub)
+};
+
+Staking.prototype.getSessionPublickKey = function() {
+    return new PublicKey(this.authorization.access_token_payload.ses)
 };
 
 Staking.prototype.getStakeActivation = async function(address) {
@@ -30,8 +36,8 @@ Staking.prototype.getStakeActivation = async function(address) {
         activation.state    =  activation.state === "Inactive" ? "Not delegated" : activation.state;
         activation.state    =  activation.state === "Active"   ? "Delegated"     : activation.state;
 
-        activation.active   = `${ Math.round((activation.active / this.sol) * 100) / 100} SOL`;
-        activation.inactive = `${ Math.round((activation.inactive / this.sol) * 100) / 100} SOL`;
+        activation.active   = `${ Math.round((activation.active / this.sol) * 100) / 100} VLX`;
+        activation.inactive = `${ Math.round((activation.inactive / this.sol) * 100) / 100} VLX`;
 
         return activation;
     } catch(_) {
@@ -46,34 +52,10 @@ Staking.prototype.getStakingValidators = async function() {
 
     for (var i in validators) {
         validators[i].key   = validators[i].votePubkey;
-        validators[i].stake = `${ Math.round((validators[i].activatedStake / this.sol) * 100) / 100} SOL`;
+        validators[i].stake = `${ Math.round((validators[i].activatedStake / this.sol) * 100) / 100} VLX`;
     };
 
     return validators;
-};
-
-Staking.prototype.withdraw = async function(account, amount = 10000002282880) {
-
-    let transaction;
-
-    try {
-        const authorizedPubkey = this.getAccountPublickKey();
-        const stakePubkey = new PublicKey(account);
-
-        transaction = StakeProgram.withdraw({
-            authorizedPubkey,
-            stakePubkey,
-            lamports: amount,
-            toPubkey: authorizedPubkey,
-        });
-    } catch(e) {
-        return {
-            error: "prepare_transaction_error",
-            description: e.message,
-        };
-    };
-
-    return this.sendTransaction(transaction);
 };
 
 Staking.prototype.undelegate = async function(account) {
@@ -138,36 +120,106 @@ Staking.prototype.getNextSeed = async function() {
     };
 };
 
-Staking.prototype.createAccount = async function(amount_sol = (this.min_stake * this.sol)) {
+Staking.prototype.checkBalance = async function(account, session, lamports) {
+    const { feeCalculator: { lamportsPerSignature } } = await this.connection.getRecentBlockhash();
 
-    // check balance and amount
+    const accountBalance = await this.connection.getBalance(account);
+    const sessionBalance = await this.connection.getBalance(session);
+
+    if (accountBalance < lamports)             throw new Error(`Account has no funds for the transaction. Need ${ Math.round((lamports / this.sol) * 10000000) / 10000000} VLX`);
+    if (sessionBalance < lamportsPerSignature) throw new Error(`No funds to pay for transaction fee on ${session.toBase58()}. You need at least ${ Math.round((lamportsPerSignature / this.sol) * 10000000) / 10000000} VLX per transaction)`);
+};
+
+Staking.prototype.withdraw = async function(stakeAccount, amount = 10000002282880) {
 
     let transaction;
 
     try {
-        const rent       = await this.connection.getMinimumBalanceForRentExemption(200);
-        const fromPubkey = this.getAccountPublickKey();
-        const authorized = new Authorized(fromPubkey, fromPubkey);
-        const lamports   = amount_sol + rent;
-        const seed       = await this.getNextSeed();
+        const account = this.getAccountPublickKey();
+        const session = this.getSessionPublickKey();
+        const storage = await VelasAccountProgram.findStorageAddress({
+            accountPublicKey: account,
+            connection:       this.connection,
+        });
 
-        const stakeAccountWithSeed = await PublicKey.createWithSeed(
-            fromPubkey,
-            seed,
-            StakeProgram.programId,
-        );
+        const withdraw_transaction = StakeProgram.withdraw({
+            authorizedPubkey: account,
+            stakePubkey:      new PublicKey(stakeAccount),
+            lamports:         amount,
+            toPubkey:         account,
+        });
 
-        const lockup = new Lockup(0,0, fromPubkey);
+        console.log("wihdraw", withdraw_transaction);
 
-        transaction = StakeProgram.createAccountWithSeed({
+        const keys = [
+            { pubkey: withdraw_transaction.instructions[0].programId, isSigner: false, isWritable: false },
+            ...withdraw_transaction.instructions[0].keys,
+        ];
+
+        keys[5].isSigner = false;
+
+        transaction = VelasAccountProgram.execute({
+            fromPubkey:  account,
+            storage, 
+            session_key: session,
+            keys,
+            data: withdraw_transaction.instructions[0].data,
+        });
+
+    } catch(e) {
+        return {
+            error: "prepare_transaction_error",
+            description: e.message,
+        };
+    };
+
+    return this.sendTransaction(transaction);
+};
+
+Staking.prototype.createAccount = async function(amount_sol) {
+
+    let transaction;
+
+    try {
+        if (typeof amount_sol !== 'number' || amount_sol < this.min_stake) throw new Error(`Minimal stake is ${this.min_stake} VLX.`);
+
+        const rent     = await this.connection.getMinimumBalanceForRentExemption(200);
+        const lamports = (amount_sol * this.sol) + rent;
+
+        const account = this.getAccountPublickKey();
+        const session = this.getSessionPublickKey();
+        const storage = await VelasAccountProgram.findStorageAddress({
+            accountPublicKey: account,
+            connection:       this.connection,
+        });
+
+        const lockup     = new Lockup(0,0, account);
+        const authorized = new Authorized(account, account);
+    
+        const seed                 = await this.getNextSeed();
+        const stakeAccountWithSeed = await PublicKey.createWithSeed(account, seed, StakeProgram.programId);
+
+        transaction = VelasAccountProgram.createAccountWithSeed({
             authorized,
-            basePubkey: fromPubkey,
-            fromPubkey,
+            basePubkey:  account,
+            fromPubkey:  account,
             lamports,
             lockup,
             seed,
             stakePubkey: stakeAccountWithSeed,
+            storage, 
+            session_key: session,
         });
+
+        await this.checkBalance(account, session, lamports); // check balance and amount
+
+        // transaction = await VelasAccountProgram.transfer({
+        //     fromPubkey,
+        //     to: fromPubkey,
+        //     op_key,
+        //     amount: 1,
+        // })
+
     } catch(e) {
         return {
             error: "prepare_transaction_error",
@@ -204,8 +256,8 @@ Staking.prototype.getStakingAccounts = async function(accounts) {
         accounts[i].seed    = await this.checkSeed(accounts[i].pubkey.toBase58());
         accounts[i].address = accounts[i].pubkey.toBase58();
         accounts[i].key     = accounts[i].address;
-        accounts[i].balance = rent ? `${(Math.round((accounts[i].account.lamports - rent) / this.sol) * 100) / 100 } SOL` : `-`;
-        accounts[i].rent    = rent ? `${ Math.round((rent / this.sol) * 100) / 100 } SOL` : `-`;
+        accounts[i].balance = rent ? `${(Math.round((accounts[i].account.lamports - rent) / this.sol) * 100) / 100 } VLX` : `-`;
+        accounts[i].rent    = rent ? `${ Math.round((rent / this.sol) * 100) / 100 } VLX` : `-`;
         accounts[i].status  = `Not delegated`;
         accounts[i].validator = `-`;
 
@@ -266,7 +318,7 @@ Staking.prototype.getInfo = async function() {
 
 Staking.prototype.sendTransaction = async function(transaction) {
     try {
-        const feePayer      = this.getAccountPublickKey();
+        const feePayer      = this.getSessionPublickKey();
         const { blockhash } = await this.connection.getRecentBlockhash();
 
         transaction.recentBlockhash = blockhash;

@@ -1,5 +1,5 @@
 import * as solanaWeb3 from '@velas/solana-web3';
-import { Auth, Web3 } from 'vortex-account-client-js';
+import { Auth, Web3 }  from '@velas/account-client';
 //import Agent  from '@velas/account-agent';
 
 import StorageHandler from './storageHandler';
