@@ -163,14 +163,14 @@ class TransferComponent extends Component {
                     <h3><b>{ userinfo.account_key }</b></h3>
                     <p>Your balance: <br/><b>{ Math.round((userinfo.balance / 1000000000) * 100) / 100} VLX</b></p>
                     <br/>
-                    <h3><b>Donate</b> to any validator your tokens:</h3>
+                    <h3><b>Donate</b> your tokens:</h3>
                     <br/>
                     <List
                         className="demo-loadmore-list"
                         itemLayout="horizontal"
                         dataSource={this.state.validators || []}
                         renderItem={item => (
-                            <List.Item actions={[<Button onClick={()=>{this.transaction(item.votePubkey)}} loading={this.state.loading} disabled={this.state.loading} type="primary">Donate</Button>]}>
+                            <List.Item actions={[<Button onClick={()=>{this.transaction(item.votePubkey)}} type="primary">Donate</Button>]}>
                                 <List.Item.Meta 
                                     avatar={ <Avatar style={{color: '#ffffff', background: '#3393e2'}} icon={<CodeSandboxOutlined />} /> }
                                     title={<a href={`https://native.velas.com/address/${item.votePubkey}?cluster=testnet`}>{item.votePubkey}</a>}
