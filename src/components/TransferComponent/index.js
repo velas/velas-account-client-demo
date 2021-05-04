@@ -80,11 +80,17 @@ class TransferComponent extends Component {
         };
     };
 
-    userinfo = async function() {
-        const { authorization, client } = this.props;
+    userinfo = async () => {
+        const { authorization, client, logout } = this.props;
+
         return new Promise((resolve) => {
             client.userinfo(authorization.access_token, (err, result) => {
                 if (err) {
+                    if (err.error === 'failed_authorization' && err.description === 'Invalid access_token') {
+                        message.info('Session expired');
+                        logout();
+                        return;
+                    }
                     resolve(err);
                 } else {
                     resolve(result);
