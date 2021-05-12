@@ -5,12 +5,12 @@ import './index.css';
 
 class Login extends Component {
     render() {
-        const {login, mode} = this.props;
+        const {login} = this.props;
         return (
             <div className="login-section">
-                <p>To start <b>{mode} login flow</b> just click on the button:</p>
+                <p>To start <b>just click</b> on the button:</p><br/>
                 <Button onClick={login} className="login-button" type="primary"  size={'large'}>
-                    Log in
+                    Try
                 </Button>
             </div>
         );
