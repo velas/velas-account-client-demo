@@ -26,6 +26,12 @@ const Demo = observer(() => {
                 auth.setError(err.description);
                 auth.setLoading(false);
             } else {
+                const authResult = localStorage.getItem('session');
+
+                try {
+                    if (authResult) auth.login(JSON.parse(authResult));
+                } catch(_) {};
+
                 auth.setLoading(false);
             };
 
@@ -55,7 +61,7 @@ const Demo = observer(() => {
                                 </div>
                                 :<>
                                     { transfer 
-                                        ? <TransferComponent authorization={auth.authorization} client={client_redirect_mode}/>
+                                        ? <TransferComponent authorization={auth.authorization} client={client_redirect_mode} logout={auth.logout}/>
                                         : <StakingComponent  authorization={auth.authorization} client={client_redirect_mode}/>
                                     }
                                 </>

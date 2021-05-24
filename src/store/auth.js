@@ -14,8 +14,16 @@ class AuthStore {
         });
     };
     
-    login      = (authResult) => this.authorization = authResult;
-    logout     = ()           => this.authorization = false;
+    login      = (authResult) => {
+        this.authorization = authResult;
+        localStorage.setItem('session', JSON.stringify(authResult));
+    };
+
+    logout     = ()           => {
+        this.authorization = false;
+        localStorage.removeItem('session');
+    };
+    
     setLoading = (status)     => this.loading = status;
     setError   = (status)     => this.error = status;
 };
