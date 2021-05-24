@@ -18,7 +18,7 @@ const Demo = observer(() => {
     const [transfer] = useState(true);
 
     const checkAuthorization = () => {
-        client_redirect_mode.parseHash((err, authResult) => {
+        client_redirect_mode.handleRedirectCallback((err, authResult) => {
             if (authResult && authResult.access_token_payload) {
                 auth.login(authResult);
                 auth.setLoading(false);
