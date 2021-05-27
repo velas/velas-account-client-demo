@@ -26,7 +26,7 @@ const App = observer(() => {
                 <Header>
                     <div className="header-components-wrapper">
                         <div className="left-nav">
-                            <h1>Demo Site</h1> 
+                            <h1>Demo Donate</h1> 
                             <Button type="primary" onClick={()=> {window.location.href = 'https://account-demo-shop.testnet.velas.com'}} size={'large'}><ShoppingCartOutlined /> Demo Shop</Button>
                         </div>
                       
