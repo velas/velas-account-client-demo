@@ -31,6 +31,10 @@ class Login extends Component {
         this.setState({
             iframe: iframe,
         })
+
+        const that = this;
+
+        setTimeout(() => that.message, 10000);
     };
 
     message = () => {
