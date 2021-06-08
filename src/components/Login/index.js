@@ -34,10 +34,11 @@ class Login extends Component {
 
         const that = this;
 
-        setTimeout(() => that.message, 10000);
+        setTimeout(that.message, 10000);
     };
 
     message = () => {
+        console.log("send post message");
         this.state.iframe.contentWindow.postMessage({
             state: 1,
             test: 'test',
