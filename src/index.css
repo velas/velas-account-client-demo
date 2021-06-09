@@ -139,11 +139,32 @@ h3, .ant-list-items, .ant-message-custom-content span {
   transform: scale(-1, 1);
 }
 
+.left-nav h1 {
+  display: inline-block;
+  margin-right: 40px;
+  margin-bottom: 0;
+}
+
+.left-nav .ant-btn {
+  background-color: #50ca95;
+}
+
+.left-nav .ant-btn:hover {
+  background-color: #56d19c;
+}
+
 .header-actions {
   position: absolute;
   right: 0;
   top: 0;
   cursor: pointer;
+}
+
+.header-actions .ant-btn { margin-left: 10px !important; }
+
+.header-actions .ant-dropdown-trigger { 
+  margin-left: 20px !important;
+  display: inline-block;
 }
 
 .header-actions .ant-avatar {
