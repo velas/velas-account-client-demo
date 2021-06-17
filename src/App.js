@@ -6,14 +6,16 @@ import { UserOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Landing, Background } from './components'
 import { useStores } from './store/RootStore'
 
-import { client_redirect_mode }  from './functions/auth';
+import { client, authorizeCallBack }  from './functions/auth';
 
 const { Header, Content } = Layout;
 
 const App = observer(() => {
     const { auth } = useStores();
 
-    const login = () => client_redirect_mode.authorize({ scope: 'VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11' });
+    const login = () => client.authorize({
+        scope: 'VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11'
+    }, authorizeCallBack(auth));
 
     const menu = () => {
         return <Menu><Menu.Item onClick={auth.logout}><span>Logout</span></Menu.Item></Menu>

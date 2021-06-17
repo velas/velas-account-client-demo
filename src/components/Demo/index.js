@@ -4,7 +4,7 @@ import { observer } from 'mobx-react'
 import { Spin } from 'antd';
 
 import { Login } from '../';
-import { client_redirect_mode }  from '../../functions/auth';
+import { client, authorizeCallBack }  from '../../functions/auth';
 import { useStores } from '../../store/RootStore'
 
 import Error from '../../components/Error';
@@ -14,32 +14,16 @@ import TransferComponent from '../../components/TransferComponent';
 import './index.css';
 
 const Demo = observer(() => {
-    const { auth } = useStores();
+    const { auth }   = useStores();
     const [transfer] = useState(true);
 
     const checkAuthorization = () => {
-        client_redirect_mode.handleRedirectCallback((err, authResult) => {
-            if (authResult && authResult.access_token_payload) {
-                auth.login(authResult);
-                auth.setLoading(false);
-            } else if (err) {
-                auth.setError(err.description);
-                auth.setLoading(false);
-            } else {
-                const authResult = localStorage.getItem('session');
-
-                try {
-                    if (authResult) auth.login(JSON.parse(authResult));
-                } catch(_) {};
-
-                auth.setLoading(false);
-            };
-
-            window.history.replaceState('', '', window.location.href.split('?')[0]);
-        });
+        client.handleRedirectCallback(authorizeCallBack(auth));
     };
 
-    const login = () => client_redirect_mode.authorize({ scope: 'VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11' });
+    const login = () => client.authorize({ 
+        scope: 'VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11' 
+    }, authorizeCallBack(auth));
 
     useEffect(checkAuthorization, []);
 
@@ -61,8 +45,8 @@ const Demo = observer(() => {
                                 </div>
                                 :<>
                                     { transfer 
-                                        ? <TransferComponent authorization={auth.authorization} client={client_redirect_mode} logout={auth.logout}/>
-                                        : <StakingComponent  authorization={auth.authorization} client={client_redirect_mode}/>
+                                        ? <TransferComponent authorization={auth.authorization} client={client} logout={auth.logout}/>
+                                        : <StakingComponent  authorization={auth.authorization} client={client}/>
                                     }
                                 </>
 
