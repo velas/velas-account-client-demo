@@ -9,7 +9,7 @@ export const web3 = Web3(solanaWeb3);
 export const agent = {}
 
 export const client = new Auth({
-    mode:        'redirect',
+    mode:        'popup',
     clientID:    process.env.REACT_APP_CLIENT_ID,
     agentDomain: process.env.REACT_APP_AGENT_DOMAIN,
     redirectUri: process.env.REACT_APP_REDIRECT_URI,
