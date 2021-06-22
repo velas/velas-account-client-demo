@@ -15,6 +15,7 @@ class AuthStore {
     };
     
     login      = (authResult) => {
+        this.error = false;
         this.authorization = authResult;
         localStorage.setItem('session', JSON.stringify(authResult));
     };

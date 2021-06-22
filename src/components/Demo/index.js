@@ -21,9 +21,11 @@ const Demo = observer(() => {
         client.handleRedirectCallback(authorizeCallBack(auth));
     };
 
-    const login = () => client.authorize({ 
-        scope: 'VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11' 
-    }, authorizeCallBack(auth));
+    const login = () => {
+        client.authorize({ 
+            scope: 'VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11' 
+        }, authorizeCallBack(auth));
+    }
 
     useEffect(checkAuthorization, []);
 

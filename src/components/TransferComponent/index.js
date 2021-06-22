@@ -134,7 +134,6 @@ class TransferComponent extends Component {
 
             const { validators, desription: staking_description } = await this.state.staking.getInfo();
             if ( staking_description ) throw new Error(staking_description);
-            console.log(validators);
             this.setState({ validators, userinfo }, ()=> {
                 this.balances();
             });
