@@ -89,7 +89,7 @@ KeyStorageHandler.prototype.getAlgorithm = function(base64PubKey) {
         const data = store.get(base64PubKey);
         data.onsuccess = () => {
             if (data.result) {
-                resolve(data.result.keys.webCryptoKeys.privateKey.algorithm.name);
+                resolve(data.result.keys.webCryptoKeys.privateKey?.algorithm?.name || 'ED25519' );
             } else {
                 resolve(false);
             }
@@ -120,7 +120,7 @@ KeyStorageHandler.prototype.extract = async function(base64PubKey) {
         );
     
         return {
-            secretKey,
+            secretKey: bs58.encode(new Uint8Array(secretKey)),
             publicKey: responce.keys.publicKey,
         };
     };
@@ -167,10 +167,13 @@ KeyStorageHandler.prototype.uploadKey = async function(params = {}) {
         let operationalKeys = params.keys || await this.generateOpKey();
         keydata.publicKey = operationalKeys.publicKey;
 
+        const secretKey = typeof operationalKeys.secretKey === 'string' 
+            ? bs58.decode(operationalKeys.secretKey)
+            : operationalKeys.secretKey;
         const encrypted = await window.crypto.subtle.encrypt(
             keysType[0],
             webCryptoKeys,
-            operationalKeys.secretKey,
+            secretKey,
         );
 
         keydata.encryptedSecret = bs58.encode(new Uint8Array(encrypted));
