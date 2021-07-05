@@ -23,7 +23,7 @@ const Demo = observer(() => {
 
     const login = () => {
         client.authorize({ 
-            scope: 'VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11' 
+            scope: 'VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11 VelasAccountProgram:Execute EVM1111111111111111111111111111111111111111:4'
         }, authorizeCallBack(auth));
     }
 
