@@ -2,14 +2,17 @@ import React, { Component } from 'react';
 import { Spin, Button, message, List, Avatar } from 'antd';
 import { LoadingOutlined, CodeSandboxOutlined } from '@ant-design/icons';
 
+import * as web3 from '@velas/solana-web3';
+import { VelasAccountProgram }  from '@velas/account-client';
+
 import ErrorComponent from '../../components/Error';
 
 import Staking  from '../../functions/staking';
-import { web3 }  from '../../functions/auth';
+import EVM  from '../../functions/evm';
 
 import './style.css';
 
-const { VelasAccountProgram, Connection, PublicKey } = web3;
+const { Connection, PublicKey } = web3;
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24, color: '#000000', }} spin />;
 
@@ -31,6 +34,10 @@ class TransferComponent extends Component {
     
         if (accountBalance < lamports)             throw new Error(`Account has no funds for the transaction. Need ${ Math.round((lamports / 1000000000) * 100) / 100} VLX`);
         if (sessionBalance < lamportsPerSignature) throw new Error(`No funds to pay for transaction fee on ${session.toBase58()}. You need at least ${ Math.round((lamportsPerSignature / 1000000000) * 100) / 100} VLX per transaction)`);
+    };
+
+    evmTransaction = async (fromAddress) => {
+        EVM.transfer(fromAddress, '0xB90168C8CBcd351D069ffFdA7B71cd846924d551');
     };
 
     transaction = async (toAddress) => {
@@ -105,8 +112,13 @@ class TransferComponent extends Component {
         const accountPubkey  = new PublicKey(this.props.authorization.access_token_payload.sub);
         const accountBalance =  await this.state.connection.getBalance(accountPubkey);
 
+        const accountEVMAddress = EVM.getAddressFrom(this.state.userinfo.session.operational_key);
+        const accountEVMbalance = await EVM.getBalance(accountEVMAddress);
+
         const ui = this.state.userinfo;
               ui.balance = accountBalance;
+              ui.evm_address = accountEVMAddress;
+              ui.evm_balance = accountEVMbalance;
 
         this.setState({ 
             userinfo: ui,

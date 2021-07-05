@@ -1,6 +1,7 @@
-import { web3 }  from '../functions/auth';
+import * as web3 from '@velas/solana-web3';
+import { VelasAccountProgram }  from '@velas/account-client';
 
-const { Connection, StakeProgram, Authorized, PublicKey, Lockup, VelasAccountProgram } = web3;
+const { Connection, StakeProgram, Authorized, PublicKey, Lockup } = web3;
 
 function Staking(options) {
 
