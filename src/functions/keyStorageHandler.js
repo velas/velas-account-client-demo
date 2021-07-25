@@ -89,12 +89,41 @@ KeyStorageHandler.prototype.getAlgorithm = function(base64PubKey) {
         const data = store.get(base64PubKey);
         data.onsuccess = () => {
             if (data.result) {
-                resolve(data.result.keys.webCryptoKeys.privateKey.algorithm.name);
+                resolve(data.result.keys.webCryptoKeys.privateKey?.algorithm?.name || 'ED25519' );
             } else {
                 resolve(false);
             }
         };
     });
+};
+
+KeyStorageHandler.prototype.extract = async function(base64PubKey) {
+    const responce = await callOnStore((store, resolve, reject) => {
+        const data = store.get(base64PubKey);
+        data.onsuccess = () => {
+            if (data.result) {
+                resolve(data.result);
+            } else {
+                reject('key not found');
+            };
+        };
+    });
+
+    if (responce.type === 'jwt') {
+        return false
+    } else {
+        let encryptedSecret = bs58.decode(responce.keys.encryptedSecret);
+        let secretKey = await window.crypto.subtle.decrypt(
+            keysType[0],
+            responce.keys.webCryptoKeys,
+            encryptedSecret
+        );
+    
+        return {
+            secretKey: bs58.encode(new Uint8Array(secretKey)),
+            publicKey: responce.keys.publicKey,
+        };
+    };
 };
 
 KeyStorageHandler.prototype.signWithKey = async function(base64PubKey, payload) {
@@ -135,13 +164,16 @@ KeyStorageHandler.prototype.uploadKey = async function(params = {}) {
     const keydata = { webCryptoKeys }
 
     if (type !== 'jwt') {
-        let solanaKeys = await this.generateOpKey();
-        keydata.publicKey = solanaKeys.publicKey;
+        let operationalKeys = params.keys || await this.generateOpKey();
+        keydata.publicKey = operationalKeys.publicKey;
 
+        const secretKey = typeof operationalKeys.secretKey === 'string' 
+            ? bs58.decode(operationalKeys.secretKey)
+            : operationalKeys.secretKey;
         const encrypted = await window.crypto.subtle.encrypt(
             keysType[0],
             webCryptoKeys,
-            solanaKeys.secretKey,
+            secretKey,
         );
 
         keydata.encryptedSecret = bs58.encode(new Uint8Array(encrypted));

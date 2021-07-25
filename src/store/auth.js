@@ -1,5 +1,7 @@
 import { observable, action, makeObservable } from "mobx";
 
+import { client } from '../functions/auth'
+
 class AuthStore {
     authorization = false;
     loading       = true;
@@ -15,7 +17,9 @@ class AuthStore {
     };
     
     login      = (authResult) => {
+        this.error = false;
         this.authorization = authResult;
+        client.defaultAccount(authResult);
         localStorage.setItem('session', JSON.stringify(authResult));
     };
 

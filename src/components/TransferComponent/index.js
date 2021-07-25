@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
-import { Spin, Button, message, List, Avatar } from 'antd';
+import { Spin, Button, message, List, Avatar, Row, Col } from 'antd';
 import { LoadingOutlined, CodeSandboxOutlined } from '@ant-design/icons';
+
+import * as web3 from '@velas/solana-web3';
+import { VelasAccountProgram }  from '@velas/account-client';
 
 import ErrorComponent from '../../components/Error';
 
 import Staking  from '../../functions/staking';
-import { web3 }  from '../../functions/auth';
+import EVM  from '../../functions/evm';
 
 import './style.css';
 
-const { VelasAccountProgram, Connection, PublicKey } = web3;
+const { Connection, PublicKey } = web3;
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24, color: '#000000', }} spin />;
 
@@ -33,6 +36,19 @@ class TransferComponent extends Component {
         if (sessionBalance < lamportsPerSignature) throw new Error(`No funds to pay for transaction fee on ${session.toBase58()}. You need at least ${ Math.round((lamportsPerSignature / 1000000000) * 100) / 100} VLX per transaction)`);
     };
 
+    evmTransaction = (fromAddress) => {
+        EVM.transfer(fromAddress, (a, b) => {
+
+            if (a.transactionHash) {
+                message.success(a.transactionHash)
+            } else {
+                message.error(a.message);
+            }
+
+            //console.log("RDD", a, b)
+        });
+    };
+
     transaction = async (toAddress) => {
         const { authorization, client } = this.props;
 
@@ -41,14 +57,14 @@ class TransferComponent extends Component {
         try {
             const fromPubkey  = new PublicKey(authorization.access_token_payload.sub);
             const session_key = new PublicKey(authorization.access_token_payload.ses);
-            const to = new PublicKey(toAddress);
+            const to          = new PublicKey(toAddress);
 
             const storage = await VelasAccountProgram.findStorageAddress({
                 connection:       this.state.connection,
                 accountPublicKey: fromPubkey,
             });
 
-            const transaction = VelasAccountProgram.transfer({
+            const transaction = await VelasAccountProgram.transfer({
                 storage,
                 fromPubkey,
                 to,
@@ -93,6 +109,7 @@ class TransferComponent extends Component {
                     }
                     resolve(err);
                 } else {
+                    console.log("userinfo", result.userinfo);
                     resolve(result);
                 };
             });
@@ -102,11 +119,14 @@ class TransferComponent extends Component {
     balances = async () => {
         const { validators } = this.state;
 
-        const accountPubkey  = new PublicKey(this.props.authorization.access_token_payload.sub);
-        const accountBalance =  await this.state.connection.getBalance(accountPubkey);
+        const accountPubkey     = new PublicKey(this.props.authorization.access_token_payload.sub);
+        const accountBalance    = await this.state.connection.getBalance(accountPubkey);
+        const accountEVMbalance = await EVM.getBalance(this.state.userinfo.account_key_evm);
 
         const ui = this.state.userinfo;
               ui.balance = accountBalance;
+              ui.evm_address = this.state.userinfo.account_key_evm;
+              ui.evm_balance = accountEVMbalance;
 
         this.setState({ 
             userinfo: ui,
@@ -128,13 +148,11 @@ class TransferComponent extends Component {
 
         try {
             const { userinfo, error, description } = await this.userinfo();
-            console.log("userinfo", userinfo);
  
             if ( error ) throw new Error(description);
 
-            const { validators, desription: staking_description } = await this.state.staking.getInfo();
-            if ( staking_description ) throw new Error(staking_description);
-            console.log(validators);
+            const { validators, desription } = await this.state.staking.getInfo();
+            if ( desription ) throw new Error(desription);
             this.setState({ validators, userinfo }, ()=> {
                 this.balances();
             });
@@ -166,11 +184,27 @@ class TransferComponent extends Component {
                 { !error && userinfo === 'loading' && <Spin indicator={antIcon} /> }
                 { !error && userinfo !== 'loading' && <div>
                     <h1>Welcome!</h1>
-                    <h3><b>{ userinfo.account_key }</b></h3>
-                    <p>Your balance: <br/><b>{ Math.round((userinfo.balance / 1000000000) * 100) / 100} VLX</b></p>
+
+                    <Row>
+                        <Col span={24} md={12}>
+                            <h3><b>Native</b></h3>
+                            <p><b>{ userinfo.account_key }</b></p>
+                            <p>Your balance: <br/><b>{ Math.round((userinfo.balance / 1000000000) * 100) / 100} VLX</b></p>
+                        </Col>
+                        <Col span={24} md={12}>
+                            <h3><b>EVM</b></h3>
+                            <p><b>{ userinfo.evm_address }</b></p>
+                            <p>Your balance: <br/><b>{ userinfo.evm_balance }</b></p>
+                        </Col>
+                    </Row>
+                    
+                    <h3>Donate <b>EVM</b> tokens:</h3>
+                    <Button onClick={()=>{this.evmTransaction(userinfo.evm_address)}} type="primary">Donate</Button>
                     <br/>
-                    <h3><b>Donate</b> your tokens:</h3>
                     <br/>
+                    <h3>Donate <b>Native</b> tokens:</h3>
+                    <br/>
+
                     <List
                         className="demo-loadmore-list"
                         itemLayout="horizontal"
