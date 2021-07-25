@@ -1,5 +1,4 @@
-import keccak256 from 'keccak256';
-import Web3      from 'web3';
+import Web3        from 'web3';
 
 import { client } from '../functions/auth';
 
@@ -7,29 +6,23 @@ function EVM(options) {
     this.web3 = new Web3(client.provider);
 };
 
-EVM.prototype.transfer = function(addressFrom, addressTo) {
-    this.web3.eth.sendTransaction({
-        nonce: 1,
-        from: addressFrom,
-        to: addressTo,
-        value: this.web3.utils.toWei('0.01', 'ether'),
-        gas_price: 1,
-        gas_limit: 3000000,
-    })
-        .then(console.log)
-        .catch(console.log);
-};
+EVM.prototype.transfer = async function(from, cb) {
 
-EVM.prototype.getAddressFrom = function(address) {
-    const pref = Buffer.from([0xAC, 0xC0]);
-    const hash = keccak256(address);
-    return "0x" + Buffer.concat([pref, hash.slice(2, 20)]).toString("hex");
+    const nonce = await this.web3.eth.getTransactionCount(from)
+
+    this.web3.eth.sendTransaction({
+        nonce,
+        from,
+        to:   '0xB90168C8CBcd351D069ffFdA7B71cd846924d551',
+        value: this.web3.utils.toWei('0.01', 'ether'),
+    })
+        .then(cb)
+        .catch(cb);
 };
 
 EVM.prototype.getBalance = async function(address) {
     var balance = await this.web3.eth.getBalance(address);
-    var wallet = this.web3.utils.fromWei(balance, 'ether');
-    return wallet;
+    return this.web3.utils.fromWei(balance, 'ether');
 };
 
 export default new EVM();
