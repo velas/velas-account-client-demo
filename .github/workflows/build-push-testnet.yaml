@@ -1,7 +1,7 @@
-name: Build-Deploy-devnet
+name: Build-Deploy-testnet
 on:
   push:
-    branches: [develop]
+    branches: [testnet]
 
 jobs:
   docker-build:
@@ -23,7 +23,7 @@ jobs:
       - name: Add .env
         id: deploy
         env:
-          BUILD_ENV: ${{ secrets.BUILD_ENV }}
+          BUILD_ENV: ${{ secrets.BUILD_ENV_TESTNET }}
         run: |
           echo $BUILD_ENV|base64 -d > .env
       - name: Login to Amazon ECR
@@ -35,8 +35,23 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: account-demo
           IMAGE_TAG: ${{github.sha}}
+          REACT_APP_CLIENT_ID: ${{ secrets.REACT_APP_CLIENT_ID_DEVNET }}
+          REACT_APP_ACCOUNT_CONRACT: ${{ secrets.REACT_APP_ACCOUNT_CONRACT_DEVNET }}
+          REACT_APP_BACKEND_ACCOUNT: ${{ secrets.REACT_APP_BACKEND_ACCOUNT_DEVNET }}
+          REACT_APP_AGENT_DOMAIN: account.devnet.veladev.net
+          REACT_APP_REDIRECT_URI: https://account-demo.devnet.veladev.net
+          REACT_APP_NODE_HOST: https://api.devnet.velas.com
+          REACT_APP_EVM_HOST: https://explorer.devnet.veladev.net/rpc
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build --no-cache --build-arg REACT_APP_CLIENT_ID \
+            --build-arg REACT_APP_ACCOUNT_CONRACT \
+            --build-arg REACT_APP_BACKEND_ACCOUNT \
+            --build-arg REACT_APP_AGENT_DOMAIN \
+            --build-arg REACT_APP_REDIRECT_URI \
+            --build-arg REACT_APP_NODE_HOST \
+            --build-arg REACT_APP_EVM_HOST \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=repository::$ECR_REPOSITORY"
           echo "::set-output name=image_tag::$IMAGE_TAG"
@@ -70,9 +85,9 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ needs.docker-build.outputs.repository }}
           IMAGE_TAG: ${{ needs.docker-build.outputs.image_tag }}
-          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_AWS }}
         run: |
           mkdir -p ~/.kube && echo $KUBE_CONFIG_DATA|base64 --decode > ~/.kube/config
           cd deploy
-          helmfile -e prod-eu-monster1 -l namespace=devnet,name=velas-account-demo apply  --set image.tag=$IMAGE_TAG,image.repository=$ECR_REGISTRY/$ECR_REPOSITORY --skip-deps
+          helmfile -e default -l namespace=testnet,name=velas-account-demo apply  --set image.tag=$IMAGE_TAG,image.repository=$ECR_REGISTRY/$ECR_REPOSITORY --skip-deps
 
