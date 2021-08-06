@@ -1,13 +1,12 @@
-import Web3        from 'web3';
+import Web3 from 'web3';
 
-import { client } from '../functions/auth';
+import { vaclient } from './vaclient';
 
 function EVM(options) {
-    this.web3 = new Web3(client.provider);
+    this.web3 = new Web3(vaclient.provider);
 };
 
 EVM.prototype.transfer = async function(from, cb) {
-
     const nonce = await this.web3.eth.getTransactionCount(from)
 
     this.web3.eth.sendTransaction({
@@ -15,9 +14,7 @@ EVM.prototype.transfer = async function(from, cb) {
         from,
         to:   '0xB90168C8CBcd351D069ffFdA7B71cd846924d551',
         value: this.web3.utils.toWei('0.01', 'ether'),
-    })
-        .then(cb)
-        .catch(cb);
+    }).then(cb).catch(cb);
 };
 
 EVM.prototype.getBalance = async function(address) {
