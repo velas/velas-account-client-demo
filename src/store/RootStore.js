@@ -1,8 +1,8 @@
 import { createContext, useContext } from 'react'
 
-import auth from "./auth";
+import authStore from "./authStore";
 
-const storeContext = createContext({ auth })
+const storeContext = createContext({ authStore })
 
 export function useStores () {
     return useContext(storeContext)

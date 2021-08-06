@@ -7,8 +7,9 @@ import { VelasAccountProgram }  from '@velas/account-client';
 
 import ErrorComponent from '../../components/Error';
 
-import Staking  from '../../functions/staking';
-import EVM  from '../../functions/evm';
+import Staking       from '../../functions/staking';
+import EVM           from '../../functions/evm';
+import { vaclient }  from '../../functions/vaclient';
 
 import './style.css';
 
@@ -38,19 +39,16 @@ class TransferComponent extends Component {
 
     evmTransaction = (fromAddress) => {
         EVM.transfer(fromAddress, (a, b) => {
-
             if (a.transactionHash) {
                 message.success(a.transactionHash)
             } else {
                 message.error(a.message);
             }
-
-            //console.log("RDD", a, b)
         });
     };
 
     transaction = async (toAddress) => {
-        const { authorization, client } = this.props;
+        const { authorization } = this.props;
 
         this.setState({ loading: true });
 
@@ -79,7 +77,7 @@ class TransferComponent extends Component {
 
             await this.checkBalance(fromPubkey, session_key, this.state.amount);
     
-            client.sendTransaction( authorization.access_token, { transaction: transaction.serializeMessage() }, (err, result) => {
+            vaclient.sendTransaction( authorization.access_token, { transaction: transaction.serializeMessage() }, (err, result) => { // TO DO: Check naming
                 if (err) {
                     message.error(err.description ,5);
                     this.setState({loading: false });
@@ -97,10 +95,10 @@ class TransferComponent extends Component {
     };
 
     userinfo = async () => {
-        const { authorization, client, logout } = this.props;
+        const { authorization, logout } = this.props;
 
         return new Promise((resolve) => {
-            client.userinfo(authorization.access_token, (err, result) => {
+            vaclient.userinfo(authorization.access_token, (err, result) => {
                 if (err) {
                     if (err.error === 'failed_authorization' && err.description === 'Invalid access_token') {
                         message.info('Session expired');
@@ -163,9 +161,9 @@ class TransferComponent extends Component {
 
     async componentDidMount() {
         try {
-            const { client, authorization } = this.props;
+            const { authorization } = this.props;
             this.setState({ 
-                staking: new Staking({ client, authorization }),
+                staking: new Staking({ authorization }),
                 connection: new Connection(process.env.REACT_APP_NODE_HOST, 'singleGossip'),
             }, ()=> {
                 this.update();

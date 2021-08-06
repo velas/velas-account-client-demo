@@ -4,7 +4,7 @@ import { observer } from 'mobx-react'
 import { Spin } from 'antd';
 
 import { Login } from '../';
-import { client, authorizeCallBack }  from '../../functions/auth';
+import { vaclient }  from '../../functions/vaclient';
 import { useStores } from '../../store/RootStore'
 
 import Error from '../../components/Error';
@@ -14,17 +14,32 @@ import TransferComponent from '../../components/TransferComponent';
 import './index.css';
 
 const Demo = observer(() => {
-    const { auth }   = useStores();
+    const { authStore: { setCurrentSession, setError, findActiveSession, session, error, loading, logout }} = useStores();
     const [transfer] = useState(true);
 
+    const processAuthResult = (err, authResult) => {
+        if (authResult && authResult.access_token_payload) {
+            setCurrentSession(authResult);
+            return;
+        } else if (err) {
+            setError(err.description);
+            return;
+        };
+    }
+
     const checkAuthorization = () => {
-        client.handleRedirectCallback(authorizeCallBack(auth));
+
+        findActiveSession();
+
+        if (session) return; 
+
+        vaclient.handleRedirectCallback(processAuthResult);
     };
 
     const login = () => {
-        client.authorize({ 
+        vaclient.authorize({ 
             scope: 'VelasAccountProgram:Execute EVM1111111111111111111111111111111111111111:4'
-        }, authorizeCallBack(auth));
+        }, processAuthResult);
     }
 
     useEffect(checkAuthorization, []);
@@ -33,13 +48,13 @@ const Demo = observer(() => {
         <div className="demo">
             <div className="hidden-block"></div>
 
-            { auth.error 
-                ? <Error error={auth.error} />
+            { error 
+                ? <Error error={error} />
                 : <>
-                    { auth.loading 
+                    { loading 
                         ? <Spin className="loading-spin" size="large" />
                         : <>
-                            { !auth.authorization 
+                            { !session 
                                 ? <div className="try-demo-section">
                                     <h1>Try a demo</h1>
                                     <h3>See how <b>Velas Account</b> works and helps you improve the safety of your customers with a seamless experience</h3>
@@ -47,8 +62,8 @@ const Demo = observer(() => {
                                 </div>
                                 :<>
                                     { transfer 
-                                        ? <TransferComponent authorization={auth.authorization} client={client} logout={auth.logout}/>
-                                        : <StakingComponent  authorization={auth.authorization} client={client}/>
+                                        ? <TransferComponent authorization={session} logout={logout}/>
+                                        : <StakingComponent  authorization={session} />
                                     }
                                 </>
 
