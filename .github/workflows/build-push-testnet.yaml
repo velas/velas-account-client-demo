@@ -45,6 +45,11 @@ jobs:
             --build-arg REACT_APP_NODE_HOST \
             --build-arg REACT_APP_EVM_HOST \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=repository::$ECR_REPOSITORY"
+          echo "::set-output name=image_tag::$IMAGE_TAG"
+
   deploy:
     name: Deploy via Helmfile
     runs-on: deploy
