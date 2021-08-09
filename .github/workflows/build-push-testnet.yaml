@@ -28,7 +28,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: account-demo
-          IMAGE_TAG: ${{github.sha}}
+          IMAGE_TAG: ${{ github.sha }}
           REACT_APP_CLIENT_ID: ${{ secrets.REACT_APP_CLIENT_ID_TESTNET }}
           REACT_APP_ACCOUNT_CONRACT: ${{ secrets.REACT_APP_ACCOUNT_CONRACT_TESTNET }}
           REACT_APP_BACKEND_ACCOUNT: ${{ secrets.REACT_APP_BACKEND_ACCOUNT_TESTNET }}
