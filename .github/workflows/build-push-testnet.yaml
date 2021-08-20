@@ -83,5 +83,6 @@ jobs:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_AWS }}
         run: |
           mkdir -p ~/.kube && echo $KUBE_CONFIG_DATA|base64 --decode > ~/.kube/config
+          kubectl config get-contexts
           cd deploy
-          helmfile -e prod -l namespace=testnet,name=velas-account-demo apply  --set image.tag=$IMAGE_TAG,image.repository=$ECR_REGISTRY/$ECR_REPOSITORY --skip-deps
+          helmfile -e default -l namespace=testnet,name=velas-account-demo apply  --set image.tag=$IMAGE_TAG,image.repository=$ECR_REGISTRY/$ECR_REPOSITORY --skip-deps
