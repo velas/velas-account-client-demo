@@ -24,7 +24,7 @@ const App = observer(() => {
     }
 
     const login = () => vaclient.authorize({
-        scope: 'VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11 VelasAccountProgram:Execute EVM1111111111111111111111111111111111111111:4'
+        scope: 'VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11 VelasAccountProgram:Execute EVM1111111111111111111111111111111111111111:4 Stake11111111111111111111111111111111111111:2 KeccakSecp256k11111111111111111111111111111:1'
     }, processAuthResult);
 
     const menu = () => {

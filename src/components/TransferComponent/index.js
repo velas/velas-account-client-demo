@@ -48,36 +48,36 @@ class TransferComponent extends Component {
     };
 
     transaction = async (toAddress) => {
-        const { authorization } = this.props;
-
         this.setState({ loading: true });
 
         try {
-            const fromPubkey  = new PublicKey(authorization.access_token_payload.sub);
-            const session_key = new PublicKey(authorization.access_token_payload.ses);
-            const to          = new PublicKey(toAddress);
+            const fromPubkey = new PublicKey(this.props.authorization.access_token_payload.sub);
+            const sessionKey = new PublicKey(this.props.authorization.access_token_payload.ses);
+            const to         = new PublicKey(toAddress);
 
-            const storage = await VelasAccountProgram.findStorageAddress({
-                connection:       this.state.connection,
-                accountPublicKey: fromPubkey,
-            });
-
-            const transaction = await VelasAccountProgram.transfer({
-                storage,
+            const transactionParams = {
                 fromPubkey,
                 to,
-                lamports:    this.state.amount,
-                session_key,
-            });
+                lamports: this.state.amount,                
+            };
+
+            const connectionParams = {
+                connection: this.state.connection,
+                sessionKey,
+            };
+
+            const transaction = await VelasAccountProgram.transfer(transactionParams, connectionParams);
 
             const { blockhash } = await this.state.connection.getRecentBlockhash();
 
             transaction.recentBlockhash = blockhash;
-            transaction.feePayer        = session_key;
+            transaction.feePayer        = sessionKey;
 
-            await this.checkBalance(fromPubkey, session_key, this.state.amount);
+            console.log(transaction)
+
+            await this.checkBalance(fromPubkey, sessionKey, this.state.amount);
     
-            vaclient.sendTransaction( authorization.access_token, { transaction: transaction.serializeMessage() }, (err, result) => { // TO DO: Check naming
+            vaclient.sendTransaction( this.props.authorization.access_token, { transaction: transaction.serializeMessage() }, (err, result) => { // TO DO: Check naming
                 if (err) {
                     message.error(err.description ,5);
                     this.setState({loading: false });
