@@ -47,6 +47,16 @@ class TransferComponent extends Component {
         });
     };
 
+    evmContractTransaction = (fromAddress) => {
+        EVM.contract(fromAddress, (error, result) => {
+            if (error) {
+                message.error(error);
+            } else {
+                message.success(result);
+            }
+        });
+    };
+
     transaction = async (toAddress) => {
         this.setState({ loading: true });
 
@@ -198,6 +208,7 @@ class TransferComponent extends Component {
                     
                     <h3>Donate <b>EVM</b> tokens:</h3>
                     <Button onClick={()=>{this.evmTransaction(userinfo.evm_address)}} type="primary">Donate</Button>
+                    <Button onClick={()=>{this.evmContractTransaction(userinfo.evm_address)}} type="primary">Contract call</Button>
                     <br/>
                     <br/>
                     <h3>Donate <b>Native</b> tokens:</h3>
