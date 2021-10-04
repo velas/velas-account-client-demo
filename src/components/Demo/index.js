@@ -38,7 +38,7 @@ const Demo = observer(() => {
 
     const login = () => {
         vaclient.authorize({ 
-            scope: 'VelasAccountProgram:Execute EVM1111111111111111111111111111111111111111:4'
+            scope: 'EVM1111111111111111111111111111111111111111:4'
         }, processAuthResult);
     }
 
