@@ -34,7 +34,7 @@ jobs:
           REACT_APP_BACKEND_ACCOUNT: ${{ secrets.REACT_APP_BACKEND_ACCOUNT_TESTNET }}
           REACT_APP_AGENT_DOMAIN: account.testnet.velas.com
           REACT_APP_REDIRECT_URI: https://account-demo.testnet.velas.com
-          REACT_APP_NODE_HOST: https://api-va.testnet.velas.com/rpc
+          REACT_APP_NODE_HOST: https://api.testnet.velas.com/rpc
           REACT_APP_EVM_HOST: https://explorer.testnet.velas.com/rpc/
         run: |
           docker build --no-cache --build-arg REACT_APP_CLIENT_ID \
