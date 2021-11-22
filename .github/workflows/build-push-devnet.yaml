@@ -32,8 +32,8 @@ jobs:
           REACT_APP_CLIENT_ID: FbqanG4CoL5TfFjfBxrJQgfDx2iA4BimsC4WcjRXurHD
           REACT_APP_REDIRECT_URI: https://account-demo.devnet.veladev.net
           REACT_APP_ACCOUNT_HOST: account.devnet.veladev.net
-          REACT_APP_NETWORK_HOST: https://api.testnet.velas.com
-          REACT_APP_SPONSOR_HOST: https://api-sponsor.testnet.velas.com
+          REACT_APP_NETWORK_HOST: https://api.devnet.velas.com
+          REACT_APP_SPONSOR_HOST: https://api-sponsor.devnet.velas.com
           REACT_APP_SPONSOR_PUB_KEY: EgJX7GpswpA8z3qRNuzNTgKKjPmw1UMfh5xQjFeVBqAK
         run: |
           docker build --no-cache --build-arg REACT_APP_CLIENT_ID \
