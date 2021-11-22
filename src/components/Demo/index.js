@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react'
-import { Spin } from 'antd';
+import { message, Spin } from 'antd';
 
 import { Login } from '../';
 import { vaclient }  from '../../functions/vaclient';
@@ -19,16 +19,17 @@ const Demo = observer(() => {
 
     const processAuthResult = (err, authResult) => {
         if (authResult && authResult.access_token_payload) {
+            window.history.replaceState({}, document.title, window.location.pathname);
             setCurrentSession(authResult);
             return;
         } else if (err) {
+            window.history.replaceState({}, document.title, window.location.pathname);
             setError(err.description);
             return;
         };
-    }
+    };
 
     const checkAuthorization = () => {
-
         findActiveSession();
 
         if (session) return; 
@@ -37,10 +38,18 @@ const Demo = observer(() => {
     };
 
     const login = () => {
-        vaclient.authorize({ 
-            scope: 'EVM1111111111111111111111111111111111111111:4'
-        }, processAuthResult);
-    }
+        fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`).then(response => {
+            response.json().then(({ token }) => {
+                vaclient.authorize({
+                    csrfToken: token,
+                    scope: 'authorization',
+                    challenge: 'some_challenge_from_backend',
+                }, processAuthResult);
+            });
+        }).catch(() => {
+            message.error("csrf host is not available")
+        });
+    };
 
     useEffect(checkAuthorization, []);
 
