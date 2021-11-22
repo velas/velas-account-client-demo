@@ -8,9 +8,11 @@ export const agent = {}
 export const vaclient = new VAClient({
     mode:        'redirect',
     clientID:    process.env.REACT_APP_CLIENT_ID,
-    agentDomain: process.env.REACT_APP_AGENT_DOMAIN,
     redirectUri: process.env.REACT_APP_REDIRECT_URI,
     StorageHandler,
     KeyStorageHandler,
-    nativeNodeHost:  process.env.REACT_APP_NODE_HOST,
+    accountProviderHost:        process.env.REACT_APP_ACCOUNT_HOST,
+    networkApiHost:             process.env.REACT_APP_NETWORK_HOST,
+    transactionsSponsorApiHost: process.env.REACT_APP_SPONSOR_HOST,
+    transactionsSponsorPubKey:  process.env.REACT_APP_SPONSOR_PUB_KEY,
 });

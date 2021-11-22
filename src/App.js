@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react'
-import { Layout, Avatar, Button, Menu, Dropdown } from 'antd';
+import { Layout, Avatar, Button, Menu, Dropdown, message } from 'antd';
 import { UserOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 
 import { Landing, Background } from './components'
@@ -15,17 +15,28 @@ const App = observer(() => {
 
     const processAuthResult = (err, authResult) => {
         if (authResult && authResult.access_token_payload) {
+            window.history.replaceState({}, document.title, window.location.pathname);
             setCurrentSession(authResult);
             return;
         } else if (err) {
+            window.history.replaceState({}, document.title, window.location.pathname);
             setError(err.description);
             return;
         };
     }
 
-    const login = () => vaclient.authorize({
-        scope: 'VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11 VelasAccountProgram:Execute EVM1111111111111111111111111111111111111111:4 Stake11111111111111111111111111111111111111:2 KeccakSecp256k11111111111111111111111111111:1'
-    }, processAuthResult);
+    const login = () => {
+        fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`).then(response => {
+            response.json().then(({ token }) => {
+                vaclient.authorize({
+                    csrfToken: token,
+                    scope: 'VelasAccountProgram:RemoveOperational VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:19 VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11 VelasAccountProgram:Execute EVM1111111111111111111111111111111111111111:4 Stake11111111111111111111111111111111111111:2 KeccakSecp256k11111111111111111111111111111:1'
+                }, processAuthResult);
+            });
+        }).catch(() => {
+            message.error("csrf host is not available")
+        });        
+    };
 
     const menu = () => {
         return <Menu><Menu.Item onClick={logout}><span>Logout</span></Menu.Item></Menu>

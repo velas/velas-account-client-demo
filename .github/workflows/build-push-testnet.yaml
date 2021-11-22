@@ -28,13 +28,13 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: account-demo
-          IMAGE_TAG: ${{github.sha}}
+          IMAGE_TAG: ${{ github.sha }}
           REACT_APP_CLIENT_ID: ${{ secrets.REACT_APP_CLIENT_ID_TESTNET }}
           REACT_APP_ACCOUNT_CONRACT: ${{ secrets.REACT_APP_ACCOUNT_CONRACT_TESTNET }}
           REACT_APP_BACKEND_ACCOUNT: ${{ secrets.REACT_APP_BACKEND_ACCOUNT_TESTNET }}
           REACT_APP_AGENT_DOMAIN: account.testnet.velas.com
           REACT_APP_REDIRECT_URI: https://account-demo.testnet.velas.com
-          REACT_APP_NODE_HOST: https://api.testnet.velas.com
+          REACT_APP_NODE_HOST: https://api.testnet.velas.com/rpc
           REACT_APP_EVM_HOST: https://explorer.testnet.velas.com/rpc/
         run: |
           docker build --no-cache --build-arg REACT_APP_CLIENT_ID \
@@ -45,6 +45,11 @@ jobs:
             --build-arg REACT_APP_NODE_HOST \
             --build-arg REACT_APP_EVM_HOST \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=repository::$ECR_REPOSITORY"
+          echo "::set-output name=image_tag::$IMAGE_TAG"
+
   deploy:
     name: Deploy via Helmfile
     runs-on: deploy
@@ -78,5 +83,6 @@ jobs:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_AWS }}
         run: |
           mkdir -p ~/.kube && echo $KUBE_CONFIG_DATA|base64 --decode > ~/.kube/config
+          kubectl config get-contexts
           cd deploy
           helmfile -e default -l namespace=testnet,name=velas-account-demo apply  --set image.tag=$IMAGE_TAG,image.repository=$ECR_REGISTRY/$ECR_REPOSITORY --skip-deps

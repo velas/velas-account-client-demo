@@ -7,6 +7,17 @@ function EVM(options) {
 };
 
 EVM.prototype.transfer = async function(from, cb) {
+
+    let csrf_token = null;
+
+    try {
+        const response = await fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`);
+        const { token } = await response.json();
+        csrf_token = token;
+    } catch (error) {
+        throw new Error("csrf host is not available");
+    };
+
     const nonce = await this.web3.eth.getTransactionCount(from)
 
     this.web3.eth.sendTransaction({
@@ -16,6 +27,8 @@ EVM.prototype.transfer = async function(from, cb) {
         value:    this.web3.utils.toWei('0.01', 'ether'),
         gas:      this.web3.utils.toHex(21000),
         gasPrice: this.web3.utils.toHex(4),
+        broadcast: true,
+        csrf_token,
     }).then(cb).catch(cb);
 };
 
@@ -50,6 +63,16 @@ EVM.prototype.contract = async function(from, cb) {
         }
     ], '0x4E7C88bca3085276C79f86ef892609014708C283');
 
+    let csrf_token = null;
+
+    try {
+        const response = await fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`);
+        const { token } = await response.json();
+        csrf_token = token;
+    } catch (error) {
+        throw new Error("csrf host is not available");
+    };
+
     const nonce = await this.web3.eth.getTransactionCount(from)
 
     storage.methods.store("123").send({
@@ -57,6 +80,8 @@ EVM.prototype.contract = async function(from, cb) {
         "nonce": nonce,
          gas:      this.web3.utils.toHex(21000),
          gasPrice: this.web3.utils.toHex(4),
+         broadcast: true,
+         csrf_token,
     })
     .on('error', function(error){ 
         console.log(error);

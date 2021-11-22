@@ -5,8 +5,6 @@ import { LoadingOutlined, CodeSandboxOutlined } from '@ant-design/icons';
 import * as web3 from '@velas/solana-web3';
 import { VelasAccountProgram }  from '@velas/account-client';
 
-import ErrorComponent from '../../components/Error';
-
 import Staking       from '../../functions/staking';
 import EVM           from '../../functions/evm';
 import { vaclient }  from '../../functions/vaclient';
@@ -20,7 +18,6 @@ const antIcon = <LoadingOutlined style={{ fontSize: 24, color: '#000000', }} spi
 class TransferComponent extends Component {
 
     state = {
-        error:      false,
         userinfo:   'loading',
         connection: false,
         loading:    false,
@@ -32,13 +29,13 @@ class TransferComponent extends Component {
     
         const accountBalance = await this.state.connection.getBalance(account);
         const sessionBalance = await this.state.connection.getBalance(session);
-    
-        if (accountBalance < lamports)             throw new Error(`Account has no funds for the transaction. Need ${ Math.round((lamports / 1000000000) * 100) / 100} VLX`);
-        if (sessionBalance < lamportsPerSignature) throw new Error(`No funds to pay for transaction fee on ${session.toBase58()}. You need at least ${ Math.round((lamportsPerSignature / 1000000000) * 100) / 100} VLX per transaction)`);
+
+        //if (accountBalance < lamports)             throw new Error(`Account has no funds for the transaction. Need ${ Math.round((lamports / 1000000000) * 100) / 100} VLX`);
+        //if (sessionBalance < lamportsPerSignature) throw new Error(`No funds to pay for transaction fee on ${session.toBase58()}. You need at least ${ Math.round((lamportsPerSignature / 1000000000) * 100) / 100} VLX per transaction)`);
     };
 
     evmTransaction = (fromAddress) => {
-        EVM.transfer(fromAddress, (a, b) => {
+        EVM.transfer(fromAddress, (a) => {
             if (a.transactionHash) {
                 message.success(a.transactionHash)
             } else {
@@ -64,6 +61,7 @@ class TransferComponent extends Component {
             const fromPubkey = new PublicKey(this.props.authorization.access_token_payload.sub);
             const sessionKey = new PublicKey(this.props.authorization.access_token_payload.ses);
             const to         = new PublicKey(toAddress);
+            const feePayer   = new PublicKey('EgJX7GpswpA8z3qRNuzNTgKKjPmw1UMfh5xQjFeVBqAK');
 
             const transactionParams = {
                 fromPubkey,
@@ -76,18 +74,31 @@ class TransferComponent extends Component {
                 sessionKey,
             };
 
+            let csrf_token = null;
+
+            try {
+                const response = await fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`);
+                const { token } = await response.json();
+                csrf_token = token;
+            } catch (error) {
+                console.log(error);
+                throw new Error("csrf host is not available");
+            };
+ 
             const transaction = await VelasAccountProgram.transfer(transactionParams, connectionParams);
 
             const { blockhash } = await this.state.connection.getRecentBlockhash();
 
             transaction.recentBlockhash = blockhash;
-            transaction.feePayer        = sessionKey;
-
-            console.log(transaction)
+            transaction.feePayer        = feePayer;
 
             await this.checkBalance(fromPubkey, sessionKey, this.state.amount);
     
-            vaclient.sendTransaction( this.props.authorization.access_token, { transaction: transaction.serializeMessage() }, (err, result) => { // TO DO: Check naming
+            vaclient.sendTransaction( this.props.authorization.access_token, { 
+                transaction: transaction.serializeMessage(),
+                broadcast: true,
+                csrf_token,
+            }, (err, result) => {
                 if (err) {
                     message.error(err.description ,5);
                     this.setState({loading: false });
@@ -149,6 +160,8 @@ class TransferComponent extends Component {
     };
 
     update = async () => {
+        const { logout } = this.props;
+
         this.setState({ 
             userinfo: 'loading',
             validators: 'loading',
@@ -165,32 +178,29 @@ class TransferComponent extends Component {
                 this.balances();
             });
         } catch(e) {
-            this.setState({ error: e.message });
+            message.error(`Auhrorization error: ${e.message}`);
+            logout();
+            return;
         };
     };
 
     async componentDidMount() {
-        try {
-            const { authorization } = this.props;
-            this.setState({ 
-                staking: new Staking({ authorization }),
-                connection: new Connection(process.env.REACT_APP_NODE_HOST, 'singleGossip'),
-            }, ()=> {
-                this.update();
-            });
-        } catch(e) {
-            this.setState({ error: e.message });
-        };
+        const { authorization } = this.props;
+        this.setState({ 
+            staking:    new Staking({ authorization }),
+            connection: new Connection(process.env.REACT_APP_NETWORK_HOST, 'singleGossip'),
+        }, ()=> {
+            this.update();
+        });
     };
 
     render() {
-        const { error, userinfo } = this.state;
+        const { userinfo } = this.state;
 
         return(
             <div className="transfer-component">
-                {  error &&                           <ErrorComponent error={error} /> }
-                { !error && userinfo === 'loading' && <Spin indicator={antIcon} /> }
-                { !error && userinfo !== 'loading' && <div>
+                { userinfo === 'loading' && <Spin indicator={antIcon} /> }
+                { userinfo !== 'loading' && <div>
                     <h1>Welcome!</h1>
 
                     <Row>

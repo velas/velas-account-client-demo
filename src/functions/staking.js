@@ -9,7 +9,7 @@ function Staking(options) {
 
     this.client        = options.client;
     this.authorization = options.authorization;
-    this.connection    = new Connection(process.env.REACT_APP_NODE_HOST, 'singleGossip');
+    this.connection    = new Connection(process.env.REACT_APP_NETWORK_HOST, 'singleGossip');
 
     this.sol           = 1000000000;
     this.min_stake     = 10000;
