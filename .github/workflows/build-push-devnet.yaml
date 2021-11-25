@@ -40,6 +40,7 @@ jobs:
             --build-arg REACT_APP_CLIENT_ID \
             --build-arg REACT_APP_REDIRECT_URI \
             --build-arg REACT_APP_ACCOUNT_HOST \
+            --build-arg REACT_APP_NETWORK_HOST \
             --build-arg REACT_APP_SPONSOR_HOST \
             --build-arg REACT_APP_SPONSOR_PUB_KEY \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
