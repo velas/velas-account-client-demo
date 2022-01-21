@@ -24,9 +24,9 @@ EVM.prototype.transfer = async function(from, cb) {
         nonce,
         from,
         to:       '0xB90168C8CBcd351D069ffFdA7B71cd846924d551',
-        value:    this.web3.utils.toWei('0.01', 'ether'),
+        value:    this.web3.utils.toHex(this.web3.utils.toWei('0.01', 'ether')),
         gas:      this.web3.utils.toHex(21000),
-        gasPrice: this.web3.utils.toHex(4),
+        gasPrice: this.web3.utils.toHex(0),
         broadcast: true,
         csrf_token,
     }).then(cb).catch(cb);
@@ -79,7 +79,7 @@ EVM.prototype.contract = async function(from, cb) {
         "from": from,
         "nonce": nonce,
          gas:      this.web3.utils.toHex(21000),
-         gasPrice: this.web3.utils.toHex(4),
+         gasPrice: this.web3.utils.toHex(0),
          broadcast: true,
          csrf_token,
     })

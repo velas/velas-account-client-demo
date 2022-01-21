@@ -50,7 +50,7 @@ jobs:
           echo "::set-output name=image_tag::$IMAGE_TAG"
   deploy:
     name: Deploy via Helmfile
-    runs-on: deploy
+    runs-on: deployer
     needs: docker-build
     steps:
       - name: Configure AWS credentials
@@ -81,6 +81,7 @@ jobs:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         run: |
           mkdir -p ~/.kube && echo $KUBE_CONFIG_DATA|base64 --decode > ~/.kube/config
+          helm plugin install https://github.com/databus23/helm-diff
           cd deploy
           helmfile -e prod-eu-monster1 -l namespace=devnet,name=velas-account-demo apply  --set image.tag=$IMAGE_TAG,image.repository=$ECR_REGISTRY/$ECR_REPOSITORY --skip-deps
 
