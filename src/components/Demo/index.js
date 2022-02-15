@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react'
 import { message, Spin } from 'antd';
 
-import { Login } from '../';
-import { vaclient }  from '../../functions/vaclient';
-import { useStores } from '../../store/RootStore'
+import {Login} from '../';
+import {vaclient} from '../../functions/vaclient';
+import {useStores} from '../../store/RootStore'
 
 import Error from '../../components/Error';
 import StakingComponent from '../../components/StakingComponent';
@@ -14,7 +14,7 @@ import TransferComponent from '../../components/TransferComponent';
 import './index.css';
 
 const Demo = observer(() => {
-    const { authStore: { setCurrentSession, setError, findActiveSession, session, error, loading, logout }} = useStores();
+    const {authStore: {setCurrentSession, setError, findActiveSession, session, error, loading, logout}} = useStores();
     const [transfer] = useState(true);
 
     const processAuthResult = (err, authResult) => {
@@ -32,23 +32,21 @@ const Demo = observer(() => {
     const checkAuthorization = () => {
         findActiveSession();
 
-        if (session) return; 
+        if (session) return;
 
         vaclient.handleRedirectCallback(processAuthResult);
     };
 
     const login = () => {
-        fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`).then(response => {
-            response.json().then(({ token }) => {
-                vaclient.authorize({
-                    csrfToken: token,
-                    scope: 'authorization',
-                    challenge: 'some_challenge_from_backend',
-                }, processAuthResult);
-            });
-        }).catch(() => {
-            message.error("csrf host is not available")
-        });
+        vaclient.authorize({
+            csrfToken: async function () {
+                const response = await fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`);
+                const result = await response.json();
+                return result.token
+            },
+            scope: 'authorization',
+            challenge: 'some_challenge_from_backend'
+        }, processAuthResult);
     };
 
     useEffect(checkAuthorization, []);
@@ -57,27 +55,27 @@ const Demo = observer(() => {
         <div className="demo">
             <div className="hidden-block"></div>
 
-            { error 
-                ? <Error error={error} />
+            {error
+                ? <Error error={error}/>
                 : <>
-                    { loading 
-                        ? <Spin className="loading-spin" size="large" />
+                    {loading
+                        ? <Spin className="loading-spin" size="large"/>
                         : <>
-                            { !session 
+                            {!session
                                 ? <div className="try-demo-section">
                                     <h1>Try a demo</h1>
                                     <h3>See how <b>Velas Account</b> works and helps you improve the safety of your customers with a seamless experience</h3>
                                     <Login mode='Redirect' login={login}/>
                                 </div>
-                                :<>
-                                    { transfer 
+                                : <>
+                                    {transfer
                                         ? <TransferComponent authorization={session} logout={logout}/>
-                                        : <StakingComponent  authorization={session} />
+                                        : <StakingComponent authorization={session}/>
                                     }
                                 </>
 
                             }
-                        
+
                         </>
                     }
                 </>
