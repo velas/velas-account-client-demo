@@ -26,16 +26,14 @@ const App = observer(() => {
     }
 
     const login = () => {
-        fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`).then(response => {
-            response.json().then(({ token }) => {
-                vaclient.authorize({
-                    csrfToken: token,
-                    scope: 'VelasAccountProgram:RemoveOperational VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:19 VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11 VelasAccountProgram:Execute EVM1111111111111111111111111111111111111111:4 Stake11111111111111111111111111111111111111:2 KeccakSecp256k11111111111111111111111111111:1'
-                }, processAuthResult);
-            });
-        }).catch(() => {
-            message.error("csrf host is not available")
-        });        
+        vaclient.authorize({
+            csrfToken: async function () {
+                const response = await fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`);
+                const result = await response.json();
+                return result.token
+            },
+            scope: 'VelasAccountProgram:RemoveOperational VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:19 VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11 VelasAccountProgram:Execute EVM1111111111111111111111111111111111111111:4 Stake11111111111111111111111111111111111111:2 KeccakSecp256k11111111111111111111111111111:1'
+        }, processAuthResult);
     };
 
     const menu = () => {
