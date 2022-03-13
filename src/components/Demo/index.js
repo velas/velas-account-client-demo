@@ -44,7 +44,7 @@ const Demo = observer(() => {
                 const result = await response.json();
                 return result.token
             },
-            scope: 'authorization',
+            scope: 'authorization VelasAccountProgram:Transfer',
             challenge: 'some_challenge_from_backend'
         }, processAuthResult);
     };
