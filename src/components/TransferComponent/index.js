@@ -60,7 +60,7 @@ class TransferComponent extends Component {
         try {
             const fromPubkey = new PublicKey(this.props.authorization.access_token_payload.sub);
             const sessionKey = new PublicKey(this.props.authorization.access_token_payload.ses);
-            const to         = new PublicKey(toAddress);
+            const to         = new PublicKey('EgJX7GpswpA8z3qRNuzNTgKKjPmw1UMfh5xQjFeVBqAK');
             const feePayer   = new PublicKey('EgJX7GpswpA8z3qRNuzNTgKKjPmw1UMfh5xQjFeVBqAK');
 
             const transactionParams = {

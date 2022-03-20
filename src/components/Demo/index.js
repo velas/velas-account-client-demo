@@ -42,7 +42,7 @@ const Demo = observer(() => {
             response.json().then(({ token }) => {
                 vaclient.authorize({
                     csrfToken: token,
-                    scope: 'authorization',
+                    scope: 'authorization VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM1111111111111111111111111111111111111111:0',
                     challenge: 'some_challenge_from_backend',
                 }, processAuthResult);
             });
