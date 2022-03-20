@@ -8,7 +8,7 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "@velas/account-agent": "0.6.0",
-    "@velas/account-client": "0.2.9",
+    "@velas/account-client": "0.2.11",
     "@velas/solana-web3": "0.1.0",
     "antd": "4.16.3",
     "bn.js": "^5.2.0",
