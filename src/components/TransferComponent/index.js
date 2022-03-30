@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { Spin, Button, message, List, Avatar, Row, Col } from 'antd';
 import { LoadingOutlined, CodeSandboxOutlined } from '@ant-design/icons';
 
-import * as web3 from '@velas/solana-web3';
 import { VelasAccountProgram }  from '@velas/account-client';
+import * as web3 from '@velas/web3';
 
 import Staking       from '../../functions/staking';
 import EVM           from '../../functions/evm';
@@ -134,6 +134,15 @@ class TransferComponent extends Component {
             });
         });
     };
+
+    challenge = () => {
+        vaclient.signChallange( this.props.authorization.access_token, {
+            challenge: 'some_string_1'
+        }, (err, result) => {
+            console.log(err, result);
+        });
+    };
+
     
     balances = async () => {
         const { validators } = this.state;
@@ -217,6 +226,7 @@ class TransferComponent extends Component {
                     </Row>
                     
                     <h3>Donate <b>EVM</b> tokens:</h3>
+                    <Button onClick={()=>{this.challenge()}} type="primary">Challange</Button>
                     <Button onClick={()=>{this.evmTransaction(userinfo.evm_address)}} type="primary">Donate</Button>
                     <Button onClick={()=>{this.evmContractTransaction(userinfo.evm_address)}} type="primary">Contract call</Button>
                     <br/>

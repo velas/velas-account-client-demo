@@ -1,4 +1,4 @@
-import * as web3 from '@velas/solana-web3';
+import * as web3 from '@velas/web3';
 import { VelasAccountProgram }  from '@velas/account-client';
 
 const { Connection, StakeProgram, Authorized, PublicKey, Lockup } = web3;
