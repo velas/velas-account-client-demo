@@ -32,7 +32,7 @@ const App = observer(() => {
                 const result = await response.json();
                 return result.token
             },
-            scope: 'VelasAccountProgram:RemoveOperational VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:19 VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11 VelasAccountProgram:Execute EVM1111111111111111111111111111111111111111:4 Stake11111111111111111111111111111111111111:2 KeccakSecp256k11111111111111111111111111111:1'
+            scope: 'VelasAccountProgram:RemoveOperational VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:19 VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11 VelasAccountProgram:Execute EVM1111111111111111111111111111111111111111:4 EVM1111111111111111111111111111111111111111:0 Stake11111111111111111111111111111111111111:2 KeccakSecp256k11111111111111111111111111111:1'
         }, processAuthResult);
     };
 
