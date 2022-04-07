@@ -10,12 +10,21 @@ EVM.prototype.transfer = async function(from, cb) {
 
     let csrf_token = null;
 
+    var balance = await this.web3.eth.getBalance(from);
+        balance = balance / 1000000000000000000;
+
+    if (balance < 0.01) {
+        cb(`Account has no funds for the transaction. Need ${ 0.01 } VLX`, null);
+        return;
+    }
+
     try {
         const response = await fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`);
         const { token } = await response.json();
         csrf_token = token;
     } catch (error) {
-        throw new Error("csrf host is not available");
+        cb("csrf host is not available", null);
+        return;
     };
 
     const nonce = await this.web3.eth.getTransactionCount(from)
@@ -84,8 +93,7 @@ EVM.prototype.contract = async function(from, cb) {
          csrf_token,
     })
     .on('error', function(error){ 
-        console.log(error);
-        cb('Transaction failed: see conole logs', null)
+        cb(error.message, null)
     })
     .on('receipt', function(receipt){
        cb(null, receipt.transactionHash)

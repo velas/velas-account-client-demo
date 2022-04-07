@@ -17,21 +17,19 @@ const antIcon = <LoadingOutlined style={{ fontSize: 24, color: '#000000', }} spi
 
 class TransferComponent extends Component {
 
-    state = {
+    state = { 
         userinfo:   'loading',
         connection: false,
         loading:    false,
         amount:     10000000,
     };
 
-    checkBalance = async function(account, session, lamports) {
+    checkBalance = async function(account, lamports) {
         const { feeCalculator: { lamportsPerSignature } } = await this.state.connection.getRecentBlockhash();
     
         const accountBalance = await this.state.connection.getBalance(account);
-        const sessionBalance = await this.state.connection.getBalance(session);
 
-        //if (accountBalance < lamports)             throw new Error(`Account has no funds for the transaction. Need ${ Math.round((lamports / 1000000000) * 100) / 100} VLX`);
-        //if (sessionBalance < lamportsPerSignature) throw new Error(`No funds to pay for transaction fee on ${session.toBase58()}. You need at least ${ Math.round((lamportsPerSignature / 1000000000) * 100) / 100} VLX per transaction)`);
+        if (accountBalance < lamports) throw new Error(`Account has no funds for the transaction. Need ${ Math.round((lamports / 1000000000) * 100) / 100} VLX`);
     };
 
     evmTransaction = (fromAddress) => {
@@ -39,7 +37,7 @@ class TransferComponent extends Component {
             if (a.transactionHash) {
                 message.success(a.transactionHash)
             } else {
-                message.error(a.message);
+                message.error(a.message || a);
             }
         });
     };
@@ -92,7 +90,7 @@ class TransferComponent extends Component {
             transaction.recentBlockhash = blockhash;
             transaction.feePayer        = feePayer;
 
-            await this.checkBalance(fromPubkey, sessionKey, this.state.amount);
+            await this.checkBalance(fromPubkey, this.state.amount);
     
             vaclient.sendTransaction( this.props.authorization.access_token, { 
                 transaction: transaction.serializeMessage(),

@@ -8,9 +8,8 @@ class Login extends Component {
         const {login} = this.props;
         return (
             <div className="login-section">
-                <p>To start <b>just click</b> on the button:</p><br/>
                 <Button onClick={login} className="login-button" type="primary"  size={'large'}>
-                    Try
+                    Login with Velas Account
                 </Button>
             </div>
         );

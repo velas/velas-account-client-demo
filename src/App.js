@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react'
 import { Layout, Avatar, Button, Menu, Dropdown, message } from 'antd';
-import { UserOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { UserOutlined, ShoppingCartOutlined, LogoutOutlined } from '@ant-design/icons';
 
 import { Landing, Background } from './components'
 import { useStores } from './store/RootStore'
@@ -32,12 +32,12 @@ const App = observer(() => {
                 const result = await response.json();
                 return result.token
             },
-            scope: 'VelasAccountProgram:RemoveOperational VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:19 VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:11 VelasAccountProgram:Execute EVM1111111111111111111111111111111111111111:4 EVM1111111111111111111111111111111111111111:0 Stake11111111111111111111111111111111111111:2 KeccakSecp256k11111111111111111111111111111:1'
+            scope: 'VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM:Execute'
         }, processAuthResult);
     };
 
     const menu = () => {
-        return <Menu><Menu.Item onClick={logout}><span>Logout</span></Menu.Item></Menu>
+        return <Menu><Menu.Item onClick={logout}><LogoutOutlined /><span> Logout </span></Menu.Item></Menu>
     };
 
     return (
