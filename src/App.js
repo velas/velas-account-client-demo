@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react'
-import { Layout, Avatar, Button, Menu, Dropdown, message } from 'antd';
+import { Layout, Avatar, Button, Menu, Dropdown } from 'antd';
 import { UserOutlined, ShoppingCartOutlined, LogoutOutlined } from '@ant-design/icons';
 
 import { Landing, Background } from './components'

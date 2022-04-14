@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react'
-import { message, Spin, Popover } from 'antd';
+import { Spin, Popover } from 'antd';
 
 import {Login} from '../';
 import {vaclient, vaclient_2} from '../../functions/vaclient';
