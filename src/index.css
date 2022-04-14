@@ -9,7 +9,7 @@ body {
   color: #292d34;
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3 {
   font-weight: 600;
   color: #45da9e;
 }
@@ -21,6 +21,10 @@ h1 {
 
 h3 {
   font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
 }
 
 code {
@@ -70,7 +74,7 @@ h3, .ant-list-items, .ant-message-custom-content span {
 .background-component {
   position: absolute;
   width: 100%;
-  min-width: 1000px;
+  min-width: 1200px;
   margin: 0 auto;
   background-color: #fafbfc;
 }
@@ -161,12 +165,13 @@ h3, .ant-list-items, .ant-message-custom-content span {
 }
 
 .left-nav .ant-btn {
-  background-color: #50ca95;
+  background-color: #4ddba4;
   vertical-align: top;
+  border: 1px solid;
 }
 
 .left-nav .ant-btn:hover {
-  background-color: #56d19c;
+  background-color: #89eac6;
 }
 
 @media (max-width: 500px) {
@@ -192,7 +197,7 @@ h3, .ant-list-items, .ant-message-custom-content span {
 
 .header-actions .ant-avatar {
   color: #fff;
-  background: #3393e2;
+  background: #b7ead7;
   width: 36px;
   height: 36px;
 }

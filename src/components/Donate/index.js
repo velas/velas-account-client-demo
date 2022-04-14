@@ -149,8 +149,8 @@ class TransferComponent extends Component {
         const accountBalance    = await this.state.connection.getBalance(accountPubkey);
         const accountEVMbalance = await EVM.getBalance(this.state.userinfo.account_key_evm);
 
-        const ui             = this.state.userinfo;
-              ui.balance     = accountBalance;
+        const ui = this.state.userinfo;
+              ui.balance = accountBalance;
               ui.evm_address = this.state.userinfo.account_key_evm;
               ui.evm_balance = accountEVMbalance;
 
