@@ -37,14 +37,6 @@
     display: flex;
 }
 
-.hidden-block {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 10px;
-    height: 10px;
-}
-
 .try-demo-section {
     background: #fff;
     padding: 60px 35px;

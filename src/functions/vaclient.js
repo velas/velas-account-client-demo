@@ -17,7 +17,7 @@ export const vaclient = new VAClient({
     transactionsSponsorPubKey:  process.env.REACT_APP_SPONSOR_PUB_KEY,
 });
 
-export const vaclient_2 = new VAClient({
+export const vaclient_wrong = new VAClient({
     mode:        'redirect',
     clientID:    'wrong',
     redirectUri: process.env.REACT_APP_REDIRECT_URI,
