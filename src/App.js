@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react'
-import { Layout, Avatar, Button, Menu, Dropdown, Spin } from 'antd';
+import { Layout, Avatar, Button, Menu, Dropdown, Spin, message } from 'antd';
 import { UserOutlined, ShoppingCartOutlined, LogoutOutlined } from '@ant-design/icons';
 
 import { DemoSection, Background } from './components'
@@ -14,33 +14,67 @@ const App = observer(() => {
         findActiveSession,
         setCurrentSession,
         setError,
+        setUserinfo,
         logout,
         session,
+        userinfo,
         error,
         loading,
         setLoading
     }} = useStores();
 
-    const processAuthResult = (err, authResult) => {
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            if (session && userinfo) getUserinfo(session.access_token);
+        }, 5000);
+
+        if (!session) clearInterval(intervalId);
+    
+        return () => clearInterval(intervalId);
+    }, [session, userinfo]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const getUserinfo = (access_token) => {
+        vaclient.userinfo(access_token, (e, result) => {
+            if (e) {
+                if (e.error === 'failed_authorization') {
+                    message.info(`Session terminated: ${e.description || e}`);
+                    logout();
+                } else {
+                    message.info(`Userinfo error: ${e.description || e}`);
+                    logout();
+                };
+            } else {
+                setUserinfo(result.userinfo);
+            };
+
+            setLoading(false);
+        });
+    };
+  
+    const processAuthResult = (e, authResult) => {
         if (authResult && authResult.access_token_payload) {
             window.history.replaceState({}, document.title, window.location.pathname);
             setCurrentSession(authResult);
-        } else if (err) {
+            getUserinfo(authResult.access_token);
+        } else if (e) {
             window.history.replaceState({}, document.title, window.location.pathname);
-            setError(err.description);
+            setError(e.description);
         };
 
-        setLoading(false);
+        if (!authResult) setLoading(false);
     };
 
-    const checkAuthorization = () => {        
-        findActiveSession();
-        if (session) return;
-        setLoading(true);
-        vaclient.handleRedirectCallback(processAuthResult);
+    const checkActiveSession = () => {
+        const foundSession = findActiveSession();
+        if (foundSession) {
+            getUserinfo(foundSession.access_token);
+        } else {
+            setLoading(true);
+            vaclient.handleRedirectCallback(processAuthResult);
+        }
     };
 
-    useEffect(checkAuthorization, []);
+    useEffect(checkActiveSession, []);
 
     const login = {
         default: () => {
@@ -73,7 +107,7 @@ const App = observer(() => {
                     const result = await response.json();
                     return result.token
                 },
-                scope: 'VelasAccountProgram:RemoveOperational VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM:Execute'
+                scope: 'VelasAccountProgram:RemoveOperational VelasAccountProgram:RemoveProgramPermission VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM:Execute'
             }, processAuthResult);
         },
 

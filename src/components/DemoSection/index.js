@@ -4,7 +4,7 @@ import { observer } from 'mobx-react'
 import { Popover, Button } from 'antd';
 
 import {useStores} from '../../store/RootStore'
-import TransferComponent from '../../components/TransferComponent';
+import Donate from '../../components/Donate';
 import logo from '../../assets/logo.png';
 
 import './index.css';
@@ -16,7 +16,7 @@ const DemoSection = observer(({ actions }) => {
     return (
         <div className="demo">
             <>
-                {  session && <TransferComponent authorization={session} logout={() => {}}/> }
+                {  session && <Donate/> }
                 { !session && 
                     <div className="try-demo-section">
                         <img onClick={() => setCount(count + 1)} alt="pc" src={logo} />

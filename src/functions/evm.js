@@ -4,7 +4,62 @@ import { vaclient } from './vaclient';
 
 function EVM(options) {
     this.web3 = new Web3(vaclient.provider);
+
+    this.storage = new this.web3.eth.Contract([
+        {
+         "anonymous": false,
+         "inputs": [
+          {
+           "indexed": true,
+           "internalType": "uint256",
+           "name": "num",
+           "type": "uint256"
+          },
+          {
+           "indexed": true,
+           "internalType": "address",
+           "name": "sender",
+           "type": "address"
+          }
+         ],
+         "name": "StoreNumber",
+         "type": "event"
+        },
+        {
+         "inputs": [],
+         "name": "retrieve",
+         "outputs": [
+          {
+           "internalType": "uint256",
+           "name": "",
+           "type": "uint256"
+          }
+         ],
+         "stateMutability": "view",
+         "type": "function"
+        },
+        {
+         "inputs": [
+          {
+           "internalType": "uint256",
+           "name": "num",
+           "type": "uint256"
+          }
+         ],
+         "name": "store",
+         "outputs": [],
+         "stateMutability": "nonpayable",
+         "type": "function"
+        }
+    ], '0x9b2e0Bb20D4B3e2456B509029662EDbDFba2a09a');
 };
+
+EVM.prototype.events = async function() {
+    this.storage.getPastEvents('StoreNumber', {
+        fromBlock: 500,
+        toBlock: 'latest'
+    }, function(error, events){ console.log("EV", error, events); });
+}
 
 EVM.prototype.transfer = async function(from, cb) {
 
@@ -35,42 +90,13 @@ EVM.prototype.transfer = async function(from, cb) {
         to:       '0xB90168C8CBcd351D069ffFdA7B71cd846924d551',
         value:    this.web3.utils.toHex(this.web3.utils.toWei('0.01', 'ether')),
         gas:      this.web3.utils.toHex(21000),
-        gasPrice: this.web3.utils.toHex(0),
+        gasPrice: this.web3.utils.toHex(2000000001),
         broadcast: true,
         csrf_token,
     }).then(cb).catch(cb);
 };
 
 EVM.prototype.contract = async function(from, cb) {
-
-    const storage = new this.web3.eth.Contract([
-        {
-            "inputs": [],
-            "name": "retrieve",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "num",
-                    "type": "uint256"
-                }
-            ],
-            "name": "store",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        }
-    ], '0x4E7C88bca3085276C79f86ef892609014708C283');
 
     let csrf_token = null;
 
@@ -84,15 +110,16 @@ EVM.prototype.contract = async function(from, cb) {
 
     const nonce = await this.web3.eth.getTransactionCount(from)
 
-    storage.methods.store("123").send({
+    this.storage.methods.store("123").send({
         "from": from,
         "nonce": nonce,
-         gas:      this.web3.utils.toHex(21000),
-         gasPrice: this.web3.utils.toHex(0),
+         gas:      this.web3.utils.toHex(50000),
+         gasPrice: this.web3.utils.toHex(2000000001),
          broadcast: true,
          csrf_token,
     })
     .on('error', function(error){ 
+        console.log(error)
         cb(error.message, null)
     })
     .on('receipt', function(receipt){

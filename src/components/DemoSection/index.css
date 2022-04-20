@@ -60,8 +60,9 @@
 
 .try-demo-section img {
     width: 80px;
+    opacity: 0.8;
     border-radius: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .try-demo-section h4 {
