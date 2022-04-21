@@ -10,13 +10,13 @@ import logo from '../../assets/logo.png';
 import './index.css';
 
 const DemoSection = observer(({ actions }) => {
-    const { authStore: { session }} = useStores();
+    const { authStore: { session, userinfo }} = useStores();
     const [count, setCount]         = useState(0);
 
     return (
         <div className="demo">
             <>
-                {  session && <Donate/> }
+                {  session && userinfo && <Donate/> }
                 { !session && 
                     <div className="try-demo-section">
                         <img onClick={() => setCount(count + 1)} alt="pc" src={logo} />
