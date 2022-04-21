@@ -177,7 +177,7 @@ const App = observer(() => {
                     }
 
                     { loading  && <Spin className="loading-spin" size="large"/> }
-                    { !loading && !error && <DemoSection actions={login}/>}
+                    { !loading && !error && userinfo && <DemoSection actions={login}/>}
                 </Content>
             </Layout>
       </div>
