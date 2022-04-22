@@ -1,5 +1,4 @@
 import Web3 from 'web3';
-import BN from 'bn.js'
 
 import { vaclient } from './vaclient';
 
@@ -89,7 +88,7 @@ EVM.prototype.transfer = async function(from, cb) {
 
     const amount = this.donateVLX * this.decimal
 
-    this.web3.eth.sendTransaction({
+    const raw = {
         nonce,
         from,
         to:       this.donateAddress,
@@ -98,7 +97,9 @@ EVM.prototype.transfer = async function(from, cb) {
         gasPrice: this.web3.utils.toHex(this.gasPrice),
         broadcast: true,
         csrf_token,
-    }).then(cb).catch(cb);
+    };
+
+    this.web3.eth.sendTransaction(raw).then(cb).catch(cb);
 };
 
 EVM.prototype.contract = async function(from, cb) {
@@ -121,21 +122,21 @@ EVM.prototype.contract = async function(from, cb) {
 
     const nonce = await this.web3.eth.getTransactionCount(from)
 
-    this.storage.methods.store("123").send({
+    const raw = {
         nonce,
         from,
         gas:      this.web3.utils.toHex(this.gas),
         gasPrice: this.web3.utils.toHex(this.gasPrice),
         broadcast: true,
         csrf_token,
-    })
+    }
+
+    this.storage.methods.store("123").send(raw)
     .on('error', function(error){ 
-        console.log(error)
         cb(error.message, null)
     })
     .on('receipt', function(receipt){
        cb(null, receipt.transactionHash)
-       console.log("receipt", receipt)
     })
 };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react'
 import { Layout, Avatar, Button, Menu, Dropdown, Spin, message } from 'antd';
 import { UserOutlined, ShoppingCartOutlined, LogoutOutlined } from '@ant-design/icons';

@@ -5,7 +5,6 @@ import { Popover, Button } from 'antd';
 
 import {useStores} from '../../store/RootStore'
 import Donate from '../../components/Donate';
-import logo from '../../assets/logo.png';
 
 import './index.css';
 

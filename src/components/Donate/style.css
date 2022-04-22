@@ -166,11 +166,20 @@
 
 .actions-item {
     width: 100%;
+    border-bottom: 1px solid #e4e4e4;
+    margin-top: 5px;
 }
 
 .actions-item .address {
     font-weight: 600;
     font-size: 12px;
+    line-height: 30px;
+}
+
+.actions-item .hash {
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 30px;
 }
 
 .actions-item .badge {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Button, message, Skeleton, Card, Avatar } from 'antd';
+import { Row, Col, Button, message, Skeleton, Card } from 'antd';
 import Jdenticon from 'react-jdenticon';
 import { CopyFilled, ArrowDownOutlined, DollarCircleOutlined, MessageOutlined } from '@ant-design/icons';
 
