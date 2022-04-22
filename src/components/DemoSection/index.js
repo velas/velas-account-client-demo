@@ -19,7 +19,7 @@ const DemoSection = observer(({ actions }) => {
                 {  session && userinfo && <Donate/> }
                 { !session && 
                     <div className="try-demo-section">
-                        <img onClick={() => setCount(count + 1)} alt="pc" src={logo} />
+                        <span onClick={() => setCount(count + 1)} className="demo-logo">D</span>
                         <h1>Log in</h1>
                         <h4>to <b>Demo site</b> to continue:</h4>
                         <Button onClick={actions.default} className="login-button" type="primary"  size={'large'}>Login with Velas Account</Button>

@@ -18,7 +18,7 @@
 
 .donate-welcome .bg{
     opacity: 0.4;
-    background-image: url("https://www.teahub.io/photos/full/3-37128_best-download-digital-art-wallpaper-fantasy-digital-art.jpg");
+    background-image: url('../../assets/background.jpg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -143,4 +143,45 @@
     text-transform: uppercase;
     color: #757575;
     font-size: 12px;
+}
+
+.evm-info .ant-card-actions > li {
+    margin: 0 0;
+}
+
+.evm-info .ant-card-actions > li > span > span {
+    padding: 10px 0;
+    width: 100%;
+    display: block
+}
+
+.evm-info .ant-card-actions > li > span > .disabled {
+    color: #c9c9ca;
+    cursor: not-allowed;
+}
+
+.evm-info .ant-card-actions > li > span > .disabled:hover {
+    color: #c9c9ca;
+}
+
+.actions-item {
+    width: 100%;
+}
+
+.actions-item .address {
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.actions-item .badge {
+    color: #673ab7;
+    font-size: 18px;
+}
+
+.actions-item .badge .anticon-dollar-circle {
+    color: #2196f3;
+}
+
+.actions-item .value {
+    font-weight: 600;
 }

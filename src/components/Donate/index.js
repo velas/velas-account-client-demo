@@ -17,28 +17,82 @@ const Donate = () => {
     const { authStore: { userinfo }} = useStores();
 
     const [balance, setBalance] = useState(false);
+    const [events,   setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const evmContractTransaction = (fromAddress) => {
         EVM.contract(fromAddress, (error, result) => {
             if (error) {
                 message.error(error);
             } else {
-                EVM.events();
                 message.success(result);
+            };
+
+            setTimeout(updateBalance, 1000);
+        });
+    };
+
+    const evmTransferTransaction = (fromAddress) => {
+        EVM.transfer(fromAddress, (a) => {
+            if (a.transactionHash) {
+                message.success(a.transactionHash)
+            } else {
+                message.error(a.message || a);
             }
+
+            setTimeout(updateBalance, 1000);
         });
     };
 
     const updateBalance = async () => {
-        const amount = await EVM.getBalance(userinfo.account_key_evm);
-        setBalance(amount)
+        setBalance(await EVM.getBalance(userinfo.account_key_evm));
     };
+
+    const updateEvents = async () => {
+        setLoading(true);
+        EVM.events((a) => {
+            setLoading(false);
+            setEvents(a);
+        });
+    };
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            EVM.events(setEvents);
+            updateBalance();
+        }, 7000);
+        return () => clearInterval(intervalId);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const updateAccountInfo = () => {
         updateBalance();
+        updateEvents();
     };
 
     useEffect(updateAccountInfo, []);
+
+    const actions = () => {
+        const array = [];
+
+        if (balance && balance > (EVM.maxFee + EVM.donateVLX)) {
+            array.push(<span onClick={()=>{evmTransferTransaction(userinfo.account_key_evm)}}><DollarCircleOutlined key="edit" />  DONATE</span>)
+        } else {
+            array.push(<span className="disabled"><DollarCircleOutlined key="edit" />  DONATE</span>)
+        };
+
+        if (balance && balance > EVM.maxFee) {
+            array.push(<span onClick={()=>{evmContractTransaction(userinfo.account_key_evm)}}><MessageOutlined key="edit" />  MESSAGE</span>)
+        } else {
+            array.push(<span className="disabled"><MessageOutlined key="edit" />  MESSAGE</span>)
+        }
+
+        if (
+            process.env.REACT_APP_ENV === "devnet" ||
+            process.env.REACT_APP_ENV === "testnet"
+        ) array.push(<span className={balance < EVM.maxFee ? 'background-action' : ''}><ArrowDownOutlined key="edit" />  RECIVE BALANCE</span>)
+        
+        return array;
+    };
 
     return(
         <Row className='donate-component'>
@@ -67,11 +121,7 @@ const Donate = () => {
                     <p className='assets'>My assets</p>
                     <Card
                         className='evm-asset'
-                        actions={[
-                            <span><DollarCircleOutlined key="edit" />  DONATE</span>,
-                            <span onClick={()=>{evmContractTransaction(userinfo.account_key_evm)}}><MessageOutlined key="edit" />  MESSAGE</span>,
-                            <span><ArrowDownOutlined key="edit" />  RECIVE BALANCE</span>,
-                        ]}
+                        actions={actions()}
                         >
                         <Skeleton loading={balance === false} avatar active>
                             <Meta
@@ -93,12 +143,23 @@ const Donate = () => {
 
                 <div className='actions-info'>
                     <p className='actions'>Last Actions</p>
+                    <Row type="flex">
+                        { loading && <Skeleton paragraph={{rows: 8}}/> }
+                        { !loading && events && events.map((event, index) =>
+                            <Row className={'actions-item'} key={index}>
+                                <Col className="logo"    xs={4} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={event.from} /></Col>
+                                <Col className="address" xs={20} md={10} lg={10}>{event.from.slice(0,8)}..{event.from.substr(-8)}</Col>
+                                <Col className="hash"    xs={24} md={6} lg={6}>{event.hash.slice(0,8)}..</Col>
+                                <Col className="badge"   xs={4} md={2} lg={2}>{event.type === 1 ? <DollarCircleOutlined /> : <MessageOutlined />}</Col>
+                                <Col className="value"   xs={20} md={4} lg={4}>{event.value}</Col>
+                            </Row>
+                        )}
+                    </Row>
                 </div>
                 
             </Col>
         </Row>
     );
-
 };
 
 export default Donate;
