@@ -106,8 +106,10 @@
     color: #ffffff;
 }
 
-.donate-content .evm-info .ant-card .ant-card-actions {
-    border-color: #e4e4e4;
+@media (max-width:800px) {
+    .donate-content .evm-info .evm-asset li {
+        width: 100% !important;
+    }
 }
 
 .donate-content .evm-info .assets {

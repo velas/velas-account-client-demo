@@ -146,8 +146,8 @@ const Donate = () => {
                         { loading && <Skeleton paragraph={{rows: 8}}/> }
                         { !loading && events && events.map((event, index) =>
                             <Row className={'actions-item'} key={index}>
-                                <Col className="logo"    xs={4} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={event.from} /></Col>
-                                <Col className="address" xs={20} md={10} lg={10}>{event.from.slice(0,8)}..{event.from.substr(-8)}</Col>
+                                <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={event.from} /></Col>
+                                <Col className="address" xs={24} md={10} lg={10}>{event.from.slice(0,8)}..{event.from.substr(-8)}</Col>
                                 <Col className="hash"    xs={24} md={6} lg={6}> {process.env.REACT_APP_EVMEXPLORER && <a href={process.env.REACT_APP_EVMEXPLORER + event.hash} target="_blank" rel="noopener noreferrer"><LinkOutlined /></a>} {event.hash.slice(0,12)}..</Col>
                                 <Col className="badge"   xs={24} md={2} lg={2}>{event.type === 1 ? <DollarCircleOutlined /> : <MessageOutlined />}</Col>
                                 <Col className="value"   xs={24} md={4} lg={4}>{event.value}</Col>
