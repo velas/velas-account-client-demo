@@ -29,6 +29,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: account-demo
           IMAGE_TAG: ${{ github.sha }}
+          REACT_APP_FAUCET: https://t.me/velas_faucet_bot
+          REACT_APP_EVMEXPLORER: https://evmexplorer.testnet.velas.com/tx/
           REACT_APP_CLIENT_ID: 6ViJbYacQkcnoP3EQKswXi1XptHvunEUVvYV2cTLho3o
           REACT_APP_REDIRECT_URI: https://account-demo.testnet.velas.com
           REACT_APP_ACCOUNT_HOST: account.testnet.velas.com
@@ -37,6 +39,8 @@ jobs:
           REACT_APP_SPONSOR_PUB_KEY: EgJX7GpswpA8z3qRNuzNTgKKjPmw1UMfh5xQjFeVBqAK
         run: |
           docker build --no-cache --build-arg REACT_APP_CLIENT_ID \
+            --build-arg REACT_APP_FAUCET \
+            --build-arg REACT_APP_EVMEXPLORER \
             --build-arg REACT_APP_CLIENT_ID \
             --build-arg REACT_APP_REDIRECT_URI \
             --build-arg REACT_APP_ACCOUNT_HOST \

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Button, message, Skeleton, Card } from 'antd';
 import Jdenticon from 'react-jdenticon';
-import { CopyFilled, ArrowDownOutlined, DollarCircleOutlined, MessageOutlined } from '@ant-design/icons';
+import { CopyFilled, ArrowDownOutlined, DollarCircleOutlined, MessageOutlined, LinkOutlined } from '@ant-design/icons';
 
 import EVM from '../../functions/evm';
 
@@ -58,13 +58,13 @@ const Donate = () => {
         });
     };
 
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            evm.events(setEvents);
-            updateBalance();
-        }, 20000);
-        return () => clearInterval(intervalId);
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    // useEffect(() => {
+    //     const intervalId = setInterval(() => {
+    //         evm.events(setEvents);
+    //         updateBalance();
+    //     }, 20000);
+    //     return () => clearInterval(intervalId);
+    // }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const updateAccountInfo = () => {
         updateBalance();
@@ -88,9 +88,7 @@ const Donate = () => {
             array.push(<span className="disabled"><MessageOutlined key="edit" />  MESSAGE</span>)
         }
 
-        if (
-            process.env.REACT_APP_FAUCET
-        ) array.push(<a href={process.env.REACT_APP_FAUCET} target="_blank" className={balance < evm.maxFee ? 'background-action' : ''}><ArrowDownOutlined key="edit" />  RECIVE BALANCE</a>)
+        if (process.env.REACT_APP_FAUCET) array.push(<a href={process.env.REACT_APP_FAUCET} target="_blank" rel="noopener noreferrer" className={balance < evm.maxFee ? 'background-action' : ''}><ArrowDownOutlined key="edit" />  RECIVE BALANCE</a>)
         
         return array;
     };
@@ -150,9 +148,9 @@ const Donate = () => {
                             <Row className={'actions-item'} key={index}>
                                 <Col className="logo"    xs={4} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={event.from} /></Col>
                                 <Col className="address" xs={20} md={10} lg={10}>{event.from.slice(0,8)}..{event.from.substr(-8)}</Col>
-                                <Col className="hash"    xs={24} md={6} lg={6}>{event.hash.slice(0,8)}..</Col>
-                                <Col className="badge"   xs={4} md={2} lg={2}>{event.type === 1 ? <DollarCircleOutlined /> : <MessageOutlined />}</Col>
-                                <Col className="value"   xs={20} md={4} lg={4}>{event.value}</Col>
+                                <Col className="hash"    xs={24} md={6} lg={6}> {process.env.REACT_APP_EVMEXPLORER && <a href={process.env.REACT_APP_EVMEXPLORER + event.hash} target="_blank" rel="noopener noreferrer"><LinkOutlined /></a>} {event.hash.slice(0,12)}..</Col>
+                                <Col className="badge"   xs={24} md={2} lg={2}>{event.type === 1 ? <DollarCircleOutlined /> : <MessageOutlined />}</Col>
+                                <Col className="value"   xs={24} md={4} lg={4}>{event.value}</Col>
                             </Row>
                         )}
                     </Row>
