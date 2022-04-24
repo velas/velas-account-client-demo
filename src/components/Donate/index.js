@@ -16,12 +16,14 @@ const Donate = () => {
 
     const { authStore: { userinfo }} = useStores();
 
+    const evm = new EVM(userinfo.account_key_evm);
+
     const [balance, setBalance] = useState(false);
     const [events,   setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const evmContractTransaction = (fromAddress) => {
-        EVM.contract(fromAddress, (error, result) => {
+    const evmContractTransaction = () => {
+        evm.contract((error, result) => {
             if (error) {
                 message.error(error);
             } else {
@@ -32,8 +34,8 @@ const Donate = () => {
         });
     };
 
-    const evmTransferTransaction = (fromAddress) => {
-        EVM.transfer(fromAddress, (a) => {
+    const evmTransferTransaction = () => {
+        evm.transfer((a) => {
             if (a.transactionHash) {
                 message.success(a.transactionHash)
             } else {
@@ -45,12 +47,12 @@ const Donate = () => {
     };
 
     const updateBalance = async () => {
-        setBalance(await EVM.getBalance(userinfo.account_key_evm));
+        setBalance(await evm.getBalance());
     };
 
     const updateEvents = async () => {
         setLoading(true);
-        EVM.events((a) => {
+        evm.events((a) => {
             setLoading(false);
             setEvents(a);
         });
@@ -58,9 +60,9 @@ const Donate = () => {
 
     useEffect(() => {
         const intervalId = setInterval(() => {
-            EVM.events(setEvents);
+            evm.events(setEvents);
             updateBalance();
-        }, 7000);
+        }, 20000);
         return () => clearInterval(intervalId);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -74,22 +76,21 @@ const Donate = () => {
     const actions = () => {
         const array = [];
 
-        if (balance && balance > (EVM.maxFee + EVM.donateVLX)) {
+        if (balance && balance > (evm.maxFee + evm.donateVLX)) {
             array.push(<span onClick={()=>{evmTransferTransaction(userinfo.account_key_evm)}}><DollarCircleOutlined key="edit" />  DONATE</span>)
         } else {
             array.push(<span className="disabled"><DollarCircleOutlined key="edit" />  DONATE</span>)
         };
 
-        if (balance && balance > EVM.maxFee) {
+        if (balance && balance > evm.maxFee) {
             array.push(<span onClick={()=>{evmContractTransaction(userinfo.account_key_evm)}}><MessageOutlined key="edit" />  MESSAGE</span>)
         } else {
             array.push(<span className="disabled"><MessageOutlined key="edit" />  MESSAGE</span>)
         }
 
         if (
-            process.env.REACT_APP_ENV === "devnet" ||
-            process.env.REACT_APP_ENV === "testnet"
-        ) array.push(<span className={balance < EVM.maxFee ? 'background-action' : ''}><ArrowDownOutlined key="edit" />  RECIVE BALANCE</span>)
+            process.env.REACT_APP_FAUCET
+        ) array.push(<a href={process.env.REACT_APP_FAUCET} target="_blank" className={balance < evm.maxFee ? 'background-action' : ''}><ArrowDownOutlined key="edit" />  RECIVE BALANCE</a>)
         
         return array;
     };

@@ -149,7 +149,7 @@
     margin: 0 0;
 }
 
-.evm-info .ant-card-actions > li > span > span {
+.evm-info .ant-card-actions > li > span > * {
     padding: 10px 0;
     width: 100%;
     display: block
