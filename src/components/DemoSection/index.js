@@ -4,22 +4,21 @@ import { observer } from 'mobx-react'
 import { Popover, Button } from 'antd';
 
 import {useStores} from '../../store/RootStore'
-import TransferComponent from '../../components/TransferComponent';
-import logo from '../../assets/logo.png';
+import Donate from '../../components/Donate';
 
 import './index.css';
 
 const DemoSection = observer(({ actions }) => {
-    const { authStore: { session }} = useStores();
+    const { authStore: { session, userinfo }} = useStores();
     const [count, setCount]         = useState(0);
 
     return (
         <div className="demo">
             <>
-                {  session && <TransferComponent authorization={session} logout={() => {}}/> }
+                {  session && userinfo && <Donate/> }
                 { !session && 
                     <div className="try-demo-section">
-                        <img onClick={() => setCount(count + 1)} alt="pc" src={logo} />
+                        <span onClick={() => setCount(count + 1)} className="demo-logo">D</span>
                         <h1>Log in</h1>
                         <h4>to <b>Demo site</b> to continue:</h4>
                         <Button onClick={actions.default} className="login-button" type="primary"  size={'large'}>Login with Velas Account</Button>

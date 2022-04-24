@@ -11,12 +11,12 @@ body {
 
 h1, h2, h3 {
   font-weight: 600;
-  color: #45da9e;
+
 }
 
 h1 {
   font-weight: 700;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 
 h3 {
@@ -100,7 +100,7 @@ h3, .ant-list-items, .ant-message-custom-content span {
 .ant-layout-content h1 {
   font-size: 32px;
   font-weight: 800;
-  line-height: 1;
+  line-height: 1.3;
   color:#000000;
 }
 
@@ -116,11 +116,11 @@ h3, .ant-list-items, .ant-message-custom-content span {
 /*BUTTON*/
 
 .ant-message-success .anticon {
-  color: #45da9e;
+  color: #71b9a2;
 }
 
 .ant-btn-primary {
-  background-color: #45da9e;
+  background-color: #71b9a2;
   border-radius: 0;
   border: 0;
   margin-right: 10px;
@@ -129,11 +129,11 @@ h3, .ant-list-items, .ant-message-custom-content span {
 
 .ant-btn-primary:hover {
   opacity: 0.8;
-  background-color: #7adcb4;
+  background-color: #95d6bb;
 }
 
 .ant-btn-primary:active, .ant-btn-primary:focus {
-  background-color: #7adcb4;
+  background-color: #95d6bb;
 }
 
 .ant-btn > .anticon + span, .ant-btn > span + .anticon {
@@ -165,13 +165,13 @@ h3, .ant-list-items, .ant-message-custom-content span {
 }
 
 .left-nav .ant-btn {
-  background-color: #4ddba4;
+  background-color: #6ebda3;
   vertical-align: top;
   border: 1px solid;
 }
 
 .left-nav .ant-btn:hover {
-  background-color: #89eac6;
+  background-color: #95d6bb;
 }
 
 @media (max-width: 500px) {
@@ -197,7 +197,7 @@ h3, .ant-list-items, .ant-message-custom-content span {
 
 .header-actions .ant-avatar {
   color: #fff;
-  background: #b7ead7;
+  background: #39967a;
   width: 36px;
   height: 36px;
 }
@@ -260,4 +260,53 @@ h3, .ant-list-items, .ant-message-custom-content span {
   h3 {
     font-size: 16px;
   }
+}
+
+@keyframes color {
+  0%   { background: #c3eada; }
+  50%  { background: rgb(255, 255, 255); }
+  100% { background: #c3eada; }
+}
+
+.background-action {
+  background: #33CCCC; /* Fallback */
+  -webkit-animation: color 1.5s infinite linear;
+  -moz-animation: color 1.5s infinite linear;
+  -o-animation: color 1.5s infinite linear;
+  animation: color 1.5s infinite linear;
+}
+
+
+.demo-logo {
+  text-align: center;
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+  line-height: 70px;
+  position: relative;
+  color: #ffffff;
+  font-size: 50px;
+  background: #7be0c0;
+  border-radius: 15px;
+  overflow: hidden;
+  font-weight: 600;
+  margin: 0 auto;
+  margin-bottom: 35px;
+}
+
+.demo-logo::before {
+    content: "D";
+    opacity: 0.4;
+    background-image: url('./assets/background.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: block;
+    left: 0;
+    top: 0;
+    z-index: 0;
 }

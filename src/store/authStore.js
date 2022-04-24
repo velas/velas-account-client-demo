@@ -3,16 +3,19 @@ import { observable, action, makeObservable } from "mobx";
 import { vaclient } from '../functions/vaclient'
 
 class AuthStore {
-    session = false;
-    loading = true;
-    error   = false;
+    session  = false;
+    loading  = true;
+    error    = false;
+    userinfo = false;
     
     constructor() {
         makeObservable(this, {
-            session: observable,
-            loading: observable,
-            error:   observable,
+            session:  observable,
+            loading:  observable,
+            error:    observable,
+            userinfo: observable,
             setCurrentSession: action,
+            setUserinfo:       action,
             logout:            action,
             findActiveSession: action,
             setLoading:        action,
@@ -26,9 +29,10 @@ class AuthStore {
         try {
             this.session = JSON.parse(session);
             vaclient.defaultAccount(this.session);
-            this.loading = false;
             this.error = false;
-        } catch (_) {}
+        } catch (_) {};
+
+        return this.session;
     };
     
     setCurrentSession = (session) => {
@@ -37,8 +41,13 @@ class AuthStore {
         localStorage.setItem('session', JSON.stringify(session));
     };
 
+    setUserinfo = (userinfo) => {
+        this.userinfo = userinfo;
+    };
+
     logout = () => {
-        this.session = false;
+        this.session  = false;
+        this.userinfo = false;
         localStorage.removeItem('session');
     };
     
