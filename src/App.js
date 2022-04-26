@@ -107,7 +107,7 @@ const App = observer(() => {
                     const result = await response.json();
                     return result.token
                 },
-                scope: 'VelasAccountProgram:RemoveOperational VelasAccountProgram:RemoveProgramPermission VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM:Execute'
+                scope: 'VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM:Execute'
             }, processAuthResult);
         },
 

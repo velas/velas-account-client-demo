@@ -25,7 +25,7 @@ const DemoSection = observer(({ actions }) => {
 
                         { count >= 10 && <>
                             <p>____<br/><br/></p>
-                            <p>Login to test <Popover content={"'VelasAccountProgram:RemoveOperational VelasAccount:Transfer VelasAccountProgram:Execute EVM:Execute'"} title="scopes:"><b>init account</b></Popover> flow</p>
+                            <p>Login to test <Popover content={"'VelasAccount:Transfer VelasAccountProgram:Execute EVM:Execute'"} title="scopes:"><b>init account</b></Popover> flow</p>
                             <Button onClick={actions.login_2} className="login-button" type="primary"  size={'large'}>Login with Velas Account</Button>
 
                             <p>Login to test <Popover content={"'authorization'"} title="scopes:"><b>sign challenge</b></Popover> flow</p>
