@@ -29,45 +29,44 @@ EVM.prototype.getBalance = async function() {
 };
 
 EVM.prototype.events = async function(cb) {
-    let foundTransactions = [];
-    
-    let startBlock   = await this.web3.eth.getBlockNumber();
-    let currentBlock = startBlock;
+    try {
+        const response = await fetch(`${process.env.REACT_APP_SPONSOR_HOST}/history`);
+        const result   = await response.json();
+        const items = result.history ? result.history.reverse().map(item => {
+            if (item.to === this.donateAddress.toLowerCase()) {
+                let amount = this.web3.utils.fromWei(item.value, 'ether');
+                    amount = Math.floor(amount*100000)/100000;
 
-    for (let i = 0; currentBlock > (startBlock - 300) && foundTransactions.length < 10; i++) {
-        const block = await this.web3.eth.getBlock(currentBlock, true);
-
-        if (block.transactions.length) {
-            for (var transaction of block.transactions) {
-
-                if (transaction.to === this.donateAddress) {
-                    let amount = this.web3.utils.fromWei(transaction.value, 'ether');
-                        amount = Math.floor(amount*100000)/100000;
-
-                    foundTransactions.push({
-                        type: 1,
-                        from: transaction.from.toLowerCase(),
-                        value: `VLX ${amount}`,
-                        hash: transaction.hash,
-                    });
-                };
-
-                if (transaction.to === this.countractAddress) {
-                    foundTransactions.push({
-                        type: 2,
-                        from: transaction.from.toLowerCase(),
-                        value: `Hi there!`,
-                        hash: transaction.hash,
-                    });
-
+                return {
+                    type: 1,
+                    from: item.from.toLowerCase(),
+                    value: `VLX ${amount}`,
+                    hash: item.hash,
                 };
             };
-        };
-        
-        currentBlock = currentBlock - 1;
-    };
 
-    cb(foundTransactions);
+            if (item.to === this.countractAddress.toLowerCase()) {
+                return {
+                    type: 2,
+                    from: item.from.toLowerCase(),
+                    value: `Hi there!`,
+                    hash: item.hash,
+                };
+
+            };
+
+            return {
+                type: 2,
+                from: '0x0',
+                value: `Hi there!`,
+                hash: '0x0',
+            };
+        }) : [];
+
+        cb(items)
+    } catch (error) {
+        cb([]);
+    };
 };
 
 EVM.prototype.transfer = async function(cb) {

@@ -20,9 +20,10 @@ const Donate = () => {
 
     const [balance, setBalance] = useState(false);
     const [events,   setEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
-    const evmContractTransaction = () => {
+    const evmContractTransaction = async () => {
+        setLoading(true);
         evm.contract((error, result) => {
             if (error) {
                 message.error(error);
@@ -30,18 +31,22 @@ const Donate = () => {
                 message.success(result);
             };
 
+            setLoading(false);
             setTimeout(updateBalance, 1000);
         });
     };
 
     const evmTransferTransaction = () => {
+        setLoading(true);
         evm.transfer((a) => {
+            
             if (a.transactionHash) {
                 message.success(a.transactionHash)
             } else {
                 message.error(a.message || a);
-            }
+            };
 
+            setLoading(false);
             setTimeout(updateBalance, 1000);
         });
     };
@@ -51,20 +56,18 @@ const Donate = () => {
     };
 
     const updateEvents = async () => {
-        setLoading(true);
         evm.events((a) => {
-            setLoading(false);
             setEvents(a);
         });
     };
 
-    // useEffect(() => {
-    //     const intervalId = setInterval(() => {
-    //         evm.events(setEvents);
-    //         updateBalance();
-    //     }, 20000);
-    //     return () => clearInterval(intervalId);
-    // }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            evm.events(setEvents);
+            updateBalance();
+        }, 4000);
+        return () => clearInterval(intervalId);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const updateAccountInfo = () => {
         updateBalance();
@@ -76,13 +79,13 @@ const Donate = () => {
     const actions = () => {
         const array = [];
 
-        if (balance && balance > (evm.maxFee + evm.donateVLX)) {
+        if (!loading && balance && balance > (evm.maxFee + evm.donateVLX)) {
             array.push(<span onClick={()=>{evmTransferTransaction(userinfo.account_key_evm)}}><DollarCircleOutlined key="edit" />  DONATE</span>)
         } else {
             array.push(<span className="disabled"><DollarCircleOutlined key="edit" />  DONATE</span>)
         };
 
-        if (balance && balance > evm.maxFee) {
+        if (!loading && balance && balance > evm.maxFee) {
             array.push(<span onClick={()=>{evmContractTransaction(userinfo.account_key_evm)}}><MessageOutlined key="edit" />  MESSAGE</span>)
         } else {
             array.push(<span className="disabled"><MessageOutlined key="edit" />  MESSAGE</span>)
@@ -122,29 +125,26 @@ const Donate = () => {
                         className='evm-asset'
                         actions={actions()}
                         >
-                        <Skeleton loading={balance === false} avatar active>
-                            <Meta
-                                avatar={<Jdenticon className="user-icon" size="50" value={userinfo.account_key_evm} />}
-                                title={'VLX ' + (balance === '0' ? '0.00' : balance)}
-                                description={
-                                    <>
-                                        <b>{userinfo.account_key_evm.slice(0,12)}..{userinfo.account_key_evm.substr(-12)}</b>
-                                        <CopyFilled className='copy' onClick={() => {
-                                            navigator.clipboard.writeText(userinfo.account_key_evm);
-                                            message.info(`Copied to clipboard`);
-                                        }} />
-                                    </>
-                                }
-                            />
-                        </Skeleton>
+                        <Meta
+                            avatar={<Jdenticon className="user-icon" size="50" value={userinfo.account_key_evm} />}
+                            title={'VLX ' + (balance === '0' ? '0.00' : balance)}
+                            description={
+                                <>
+                                    <b>{userinfo.account_key_evm.slice(0,12)}..{userinfo.account_key_evm.substr(-12)}</b>
+                                    <CopyFilled className='copy' onClick={() => {
+                                        navigator.clipboard.writeText(userinfo.account_key_evm);
+                                        message.info(`Copied to clipboard`);
+                                    }} />
+                                </>
+                            }
+                        />
                     </Card>
                 </div>
 
                 <div className='actions-info'>
                     <p className='actions'>Last Actions</p>
                     <Row type="flex">
-                        { loading && <Skeleton paragraph={{rows: 8}}/> }
-                        { !loading && events && events.map((event, index) =>
+                        { events && events.map((event, index) =>
                             <Row className={'actions-item'} key={index}>
                                 <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={event.from} /></Col>
                                 <Col className="address" xs={24} md={10} lg={10}>{event.from.slice(0,8)}..{event.from.substr(-8)}</Col>
