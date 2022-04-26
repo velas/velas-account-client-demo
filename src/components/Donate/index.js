@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Button, message, Skeleton, Card } from 'antd';
 import Jdenticon from 'react-jdenticon';
-import { CopyFilled, ArrowDownOutlined, DollarCircleOutlined, MessageOutlined } from '@ant-design/icons';
+import { CopyFilled, ArrowDownOutlined, DollarCircleOutlined, MessageOutlined, LinkOutlined } from '@ant-design/icons';
 
 import EVM from '../../functions/evm';
 
@@ -20,9 +20,10 @@ const Donate = () => {
 
     const [balance, setBalance] = useState(false);
     const [events,   setEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
-    const evmContractTransaction = () => {
+    const evmContractTransaction = async () => {
+        setLoading(true);
         evm.contract((error, result) => {
             if (error) {
                 message.error(error);
@@ -30,18 +31,22 @@ const Donate = () => {
                 message.success(result);
             };
 
+            setLoading(false);
             setTimeout(updateBalance, 1000);
         });
     };
 
     const evmTransferTransaction = () => {
+        setLoading(true);
         evm.transfer((a) => {
+            
             if (a.transactionHash) {
                 message.success(a.transactionHash)
             } else {
                 message.error(a.message || a);
-            }
+            };
 
+            setLoading(false);
             setTimeout(updateBalance, 1000);
         });
     };
@@ -51,9 +56,7 @@ const Donate = () => {
     };
 
     const updateEvents = async () => {
-        setLoading(true);
         evm.events((a) => {
-            setLoading(false);
             setEvents(a);
         });
     };
@@ -62,7 +65,7 @@ const Donate = () => {
         const intervalId = setInterval(() => {
             evm.events(setEvents);
             updateBalance();
-        }, 20000);
+        }, 4000);
         return () => clearInterval(intervalId);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -76,21 +79,19 @@ const Donate = () => {
     const actions = () => {
         const array = [];
 
-        if (balance && balance > (evm.maxFee + evm.donateVLX)) {
+        if (!loading && balance && balance > (evm.maxFee + evm.donateVLX)) {
             array.push(<span onClick={()=>{evmTransferTransaction(userinfo.account_key_evm)}}><DollarCircleOutlined key="edit" />  DONATE</span>)
         } else {
             array.push(<span className="disabled"><DollarCircleOutlined key="edit" />  DONATE</span>)
         };
 
-        if (balance && balance > evm.maxFee) {
+        if (!loading && balance && balance > evm.maxFee) {
             array.push(<span onClick={()=>{evmContractTransaction(userinfo.account_key_evm)}}><MessageOutlined key="edit" />  MESSAGE</span>)
         } else {
             array.push(<span className="disabled"><MessageOutlined key="edit" />  MESSAGE</span>)
         }
 
-        if (
-            process.env.REACT_APP_FAUCET
-        ) array.push(<a href={process.env.REACT_APP_FAUCET} target="_blank" className={balance < evm.maxFee ? 'background-action' : ''}><ArrowDownOutlined key="edit" />  RECIVE BALANCE</a>)
+        if (process.env.REACT_APP_FAUCET) array.push(<a href={process.env.REACT_APP_FAUCET} target="_blank" rel="noopener noreferrer" className={balance < evm.maxFee ? 'background-action' : ''}><ArrowDownOutlined key="edit" />  RECIVE BALANCE</a>)
         
         return array;
     };
@@ -124,35 +125,32 @@ const Donate = () => {
                         className='evm-asset'
                         actions={actions()}
                         >
-                        <Skeleton loading={balance === false} avatar active>
-                            <Meta
-                                avatar={<Jdenticon className="user-icon" size="50" value={userinfo.account_key_evm} />}
-                                title={'VLX ' + (balance === '0' ? '0.00' : balance)}
-                                description={
-                                    <>
-                                        <b>{userinfo.account_key_evm.slice(0,12)}..{userinfo.account_key_evm.substr(-12)}</b>
-                                        <CopyFilled className='copy' onClick={() => {
-                                            navigator.clipboard.writeText(userinfo.account_key_evm);
-                                            message.info(`Copied to clipboard`);
-                                        }} />
-                                    </>
-                                }
-                            />
-                        </Skeleton>
+                        <Meta
+                            avatar={<Jdenticon className="user-icon" size="50" value={userinfo.account_key_evm} />}
+                            title={'VLX ' + (balance === '0' ? '0.00' : balance)}
+                            description={
+                                <>
+                                    <b>{userinfo.account_key_evm.slice(0,12)}..{userinfo.account_key_evm.substr(-12)}</b>
+                                    <CopyFilled className='copy' onClick={() => {
+                                        navigator.clipboard.writeText(userinfo.account_key_evm);
+                                        message.info(`Copied to clipboard`);
+                                    }} />
+                                </>
+                            }
+                        />
                     </Card>
                 </div>
 
                 <div className='actions-info'>
                     <p className='actions'>Last Actions</p>
                     <Row type="flex">
-                        { loading && <Skeleton paragraph={{rows: 8}}/> }
-                        { !loading && events && events.map((event, index) =>
+                        { events && events.map((event, index) =>
                             <Row className={'actions-item'} key={index}>
-                                <Col className="logo"    xs={4} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={event.from} /></Col>
-                                <Col className="address" xs={20} md={10} lg={10}>{event.from.slice(0,8)}..{event.from.substr(-8)}</Col>
-                                <Col className="hash"    xs={24} md={6} lg={6}>{event.hash.slice(0,8)}..</Col>
-                                <Col className="badge"   xs={4} md={2} lg={2}>{event.type === 1 ? <DollarCircleOutlined /> : <MessageOutlined />}</Col>
-                                <Col className="value"   xs={20} md={4} lg={4}>{event.value}</Col>
+                                <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={event.from} /></Col>
+                                <Col className="address" xs={24} md={10} lg={10}>{event.from.slice(0,8)}..{event.from.substr(-8)}</Col>
+                                <Col className="hash"    xs={24} md={6} lg={6}> {process.env.REACT_APP_EVMEXPLORER && <a href={process.env.REACT_APP_EVMEXPLORER + event.hash} target="_blank" rel="noopener noreferrer"><LinkOutlined /></a>} {event.hash.slice(0,12)}..</Col>
+                                <Col className="badge"   xs={24} md={2} lg={2}>{event.type === 1 ? <DollarCircleOutlined /> : <MessageOutlined />}</Col>
+                                <Col className="value"   xs={24} md={4} lg={4}>{event.value}</Col>
                             </Row>
                         )}
                     </Row>
