@@ -1,0 +1,6 @@
+
+.ant-table-cell button {
+    display: block;
+    margin: 10px auto;
+    min-width: 120px;
+}

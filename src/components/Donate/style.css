@@ -1,0 +1,198 @@
+
+.donate-component {
+    background: #fff;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+    margin-top: 30px;
+
+    box-shadow: -1px 6px 82px -15px rgba(0,0,0,0.55);
+    -webkit-box-shadow: -1px 6px 82px -15px rgba(0,0,0,0.55);
+    -moz-box-shadow: -1px 6px 82px -15px rgba(0,0,0,0.55);
+}
+
+.donate-welcome {
+    background: #45c595;
+    padding: 80px 25px 25px;
+}
+
+.donate-welcome .bg{
+    opacity: 0.4;
+    background-image: url('../../assets/background.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: block;
+    left: 0;
+    top: 0;
+    z-index: 0;
+}
+
+.donate-welcome > * {
+    position: relative;
+    z-index: 1;
+}
+
+.donate-welcome h2 {
+    color: #ffffff;
+    z-index: 1;
+}
+
+.donate-welcome p {
+    margin-bottom: 40px;
+    color: #ffffff;
+}
+
+.donate-welcome img {
+    width: 100px;
+    margin-bottom: 35px;
+}
+
+.donate-welcome button {
+    width: 100%;
+    margin-bottom: 60px;
+    background-color: transparent;
+    border: 1px solid #FFFFFF;
+}
+
+.donate-welcome button:hover {
+    background-color: #70d4ae !important;
+    border-color: #FFFFFF !important;
+}
+  
+
+
+.donate-content .user-info {
+    padding: 25px;
+    border-bottom: 1px solid #e4e4e4;
+}
+
+.donate-content .user-info p {
+    margin: 0;
+    color: #409780;
+}
+
+.donate-content .user-info .copy {
+    padding-left: 5px;
+    color: #409780;
+}
+
+
+
+.donate-content .evm-info {
+    padding: 25px;
+    border-bottom: 1px solid #e4e4e4;
+}
+
+.donate-content .evm-info .ant-card {
+    margin: 0;
+    text-align: left;
+    border-color: #e4e4e4;
+}
+
+.donate-content .evm-info .evm-asset::after {
+    content: 'EVM';
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    background-color: #68b49b;
+    padding: 2px 8px;
+    color: #ffffff;
+}
+
+@media (max-width:800px) {
+    .donate-content .evm-info .evm-asset li {
+        width: 100% !important;
+    }
+}
+
+.donate-content .evm-info .assets {
+    text-align: left;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #757575;
+    font-size: 12px;
+
+}
+
+.donate-content .evm-info .ant-card-meta-title {
+    font-weight: 800;
+}
+
+.donate-content .evm-info .ant-card-meta-description {
+    color: #409780;
+}
+
+.donate-content .evm-info .ant-card-meta-description .copy {
+    padding-left: 5px;
+}
+
+
+
+.donate-content .actions-info {
+    padding: 25px;
+}
+
+.donate-content .actions-info .actions {
+    text-align: left;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #757575;
+    font-size: 12px;
+}
+
+.evm-info .ant-card-actions > li {
+    margin: 0 0;
+}
+
+.evm-info .ant-card-actions > li > span > * {
+    padding: 10px 0;
+    width: 100%;
+    display: block
+}
+
+.evm-info .ant-card-actions > li > span > .disabled {
+    color: #c9c9ca;
+    cursor: not-allowed;
+}
+
+.evm-info .ant-card-actions > li > span > .disabled:hover {
+    color: #c9c9ca;
+}
+
+.actions-item {
+    width: 100%;
+    border-bottom: 1px solid #e4e4e4;
+    margin-top: 5px;
+}
+
+.actions-item .address {
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 30px;
+}
+
+.actions-item .hash {
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 30px;
+}
+
+.actions-item .badge {
+    color: #673ab7;
+    font-size: 18px;
+}
+
+.actions-item .badge .anticon-dollar-circle {
+    color: #2196f3;
+}
+
+.actions-item .value {
+    font-weight: 600;
+}
