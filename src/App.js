@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react'
 import { Layout, Avatar, Button, Menu, Dropdown, Spin, message } from 'antd';
-import { UserOutlined, ShoppingCartOutlined, LogoutOutlined } from '@ant-design/icons';
+import {UserOutlined, ShoppingCartOutlined, LogoutOutlined, UserSwitchOutlined} from '@ant-design/icons';
 
 import { DemoSection, Background } from './components'
 import { useStores } from './store/RootStore'
@@ -150,7 +150,7 @@ const App = observer(() => {
 
                         <div className="header-actions">
                             { session
-                                ? <Dropdown overlay={<Menu><Menu.Item onClick={logout}><LogoutOutlined /><span> Logout </span></Menu.Item></Menu>} trigger={['click']}>
+                                ? <Dropdown overlay={<Menu><Menu.Item onClick={logout}><LogoutOutlined/><span> Logout </span></Menu.Item><Menu.Item><UserSwitchOutlined/><a href={`http://${process.env.REACT_APP_ACCOUNT_HOST}/account/:address=${session.access_token_payload.sub}`} target="_blank" rel="noopener noreferrer"> Account </a></Menu.Item></Menu>} trigger={['click']}>
                                     <div>
                                         <Avatar icon={<UserOutlined />} />
                                         <span className="account-name">{session.access_token_payload.sub.slice(0,4)}..{session.access_token_payload.sub.substr(-4)}</span>
