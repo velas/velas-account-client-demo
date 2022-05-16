@@ -11,6 +11,12 @@
     font-size: 17px;
 }
 
+@media (max-width: 950px) {
+    .title-block {
+        padding-top: 20px;
+    }
+}
+
 .title-block h1{
     color: white !important;
     margin-bottom: 25px;

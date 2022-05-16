@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react'
 import { Layout, Avatar, Button, Menu, Dropdown, Spin, message } from 'antd';
-import { UserOutlined, ShoppingCartOutlined, LogoutOutlined } from '@ant-design/icons';
+import {UserOutlined, ShoppingCartOutlined, LogoutOutlined, UserSwitchOutlined} from '@ant-design/icons';
 
 import { DemoSection, Background } from './components'
 import { useStores } from './store/RootStore'
-import { vaclient, vaclient_wrong }  from './functions/vaclient';
+import { vaclient, vaclient_wrong, vaclient_popup }  from './functions/vaclient';
 
 const { Header, Content } = Layout;
 
@@ -84,7 +84,18 @@ const App = observer(() => {
                     const result = await response.json();
                     return result.token
                 },
-                scope: 'VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM:Execute'
+                scope: 'VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM:Execute VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:20'
+            }, processAuthResult);
+        },
+
+        login_popup: () => {
+            vaclient_popup.authorize({
+                csrfToken: async function () {
+                    const response = await fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`);
+                    const result = await response.json();
+                    return result.token
+                },
+                scope: 'VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM:Execute VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:20'
             }, processAuthResult);
         },
 
@@ -150,7 +161,7 @@ const App = observer(() => {
 
                         <div className="header-actions">
                             { session
-                                ? <Dropdown overlay={<Menu><Menu.Item onClick={logout}><LogoutOutlined /><span> Logout </span></Menu.Item></Menu>} trigger={['click']}>
+                                ? <Dropdown overlay={<Menu><Menu.Item onClick={logout}><LogoutOutlined/><span> Logout </span></Menu.Item><Menu.Item><UserSwitchOutlined/><a href={`http://${process.env.REACT_APP_ACCOUNT_HOST}/account/:address=${session.access_token_payload.sub}`} target="_blank" rel="noopener noreferrer"> Account </a></Menu.Item></Menu>} trigger={['click']}>
                                     <div>
                                         <Avatar icon={<UserOutlined />} />
                                         <span className="account-name">{session.access_token_payload.sub.slice(0,4)}..{session.access_token_payload.sub.substr(-4)}</span>
