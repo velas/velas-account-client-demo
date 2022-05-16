@@ -1,4 +1,5 @@
 import Web3 from 'web3';
+import BN from 'bn.js';
 
 import { vaclient } from './vaclient';
 
@@ -10,7 +11,7 @@ function EVM(form) {
     this.decimal  = 1000000000000000000;
 
     this.maxFee    = Math.ceil((this.gas * this.gasPrice) / this.decimal*100000)/100000;
-    this.donateVLX = 0.007;
+    this.donateVLX = 1;
 
     this.countractAddress = '0x9b2e0Bb20D4B3e2456B509029662EDbDFba2a09a';
     this.donateAddress    = '0xACF8ef3c3f5536513429629428F8324a5D634b39';
@@ -88,13 +89,15 @@ EVM.prototype.transfer = async function(cb) {
 
     const nonce = await this.web3.eth.getTransactionCount(this.form);
 
-    const amount = this.donateVLX * this.decimal
+    var a = new BN(this.donateVLX);
+    var b = new BN(this.decimal.toString());
+    const amountBN = a.mul(b)
 
     const raw = {
         nonce,
         from:     this.form,
         to:       this.donateAddress,
-        value:    this.web3.utils.toHex(amount),
+        value:    this.web3.utils.toHex(amountBN.toString()),
         gas:      this.web3.utils.toHex(this.gas),
         gasPrice: this.web3.utils.toHex(this.gasPrice),
         broadcast: true,

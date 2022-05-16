@@ -5,7 +5,7 @@ import {UserOutlined, ShoppingCartOutlined, LogoutOutlined, UserSwitchOutlined} 
 
 import { DemoSection, Background } from './components'
 import { useStores } from './store/RootStore'
-import { vaclient, vaclient_wrong }  from './functions/vaclient';
+import { vaclient, vaclient_wrong, vaclient_popup }  from './functions/vaclient';
 
 const { Header, Content } = Layout;
 
@@ -84,7 +84,18 @@ const App = observer(() => {
                     const result = await response.json();
                     return result.token
                 },
-                scope: 'VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM:Execute'
+                scope: 'VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM:Execute VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:20'
+            }, processAuthResult);
+        },
+
+        login_popup: () => {
+            vaclient_popup.authorize({
+                csrfToken: async function () {
+                    const response = await fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`);
+                    const result = await response.json();
+                    return result.token
+                },
+                scope: 'VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM:Execute VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:20'
             }, processAuthResult);
         },
 
