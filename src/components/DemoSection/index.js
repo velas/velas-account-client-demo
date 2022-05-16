@@ -28,6 +28,9 @@ const DemoSection = observer(({ actions }) => {
                             <p>Login to test <Popover content={"'VelasAccountProgram:LockOperational VelasAccount:Transfer VelasAccountProgram:Execute EVM:Execute'"} title="scopes:"><b>init account</b></Popover> flow</p>
                             <Button onClick={actions.login_2} className="login-button" type="primary"  size={'large'}>Login with Velas Account</Button>
 
+                            <p>Login to test <Popover content={"'VelasAccountProgram:LockOperational VelasAccount:Transfer VelasAccountProgram:Execute EVM:Execute'"} title="scopes:"><b>popup mode</b></Popover> flow</p>
+                            <Button onClick={actions.login_popup} className="login-button" type="primary"  size={'large'}>Login with Velas Account</Button>
+
                             <p>Login to test <Popover content={"'authorization'"} title="scopes:"><b>sign challenge</b></Popover> flow</p>
                             <Button onClick={actions.login_1} className="login-button" type="primary"  size={'large'}>Login with Velas Account</Button>
 
