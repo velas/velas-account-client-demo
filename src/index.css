@@ -311,3 +311,24 @@ h3, .ant-list-items, .ant-message-custom-content span {
     top: 0;
     z-index: 0;
 }
+
+.border {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+}
+
+.progress {
+  background: #f44336;
+  height: 5px;
+  -moz-animation: width 6s;
+  -webkit-animation: width 6s;
+  -o-animation: width 6s;
+  animation: width 6s;
+}
+
+@keyframes width {
+  from {width: 0%}
+  to {width: 100%}
+}
