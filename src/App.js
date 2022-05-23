@@ -192,8 +192,8 @@ const App = observer(() => {
                                 <h2>Authorization Error</h2>
                                 <Error400 className="error-400-image"/>
                                 <p>Description: {error}</p>
-                                <div class="border">
-                                    <div class="progress">
+                                <div className="border">
+                                    <div className="progress">
                                     </div>
                                 </div>
                             </div>
