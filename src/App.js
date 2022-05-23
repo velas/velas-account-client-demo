@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react'
 import { Layout, Avatar, Button, Menu, Dropdown, Spin, message } from 'antd';
-import { UserOutlined, ShoppingCartOutlined, LogoutOutlined } from '@ant-design/icons';
+import {UserOutlined, ShoppingCartOutlined, LogoutOutlined, UserSwitchOutlined} from '@ant-design/icons';
 
 import { DemoSection, Background } from './components'
 import { useStores } from './store/RootStore'
 import { vaclient, vaclient_wrong, vaclient_popup }  from './functions/vaclient';
+import {ReactComponent as Error400} from "./assets/error-400.svg";
 
 const { Header, Content } = Layout;
 
@@ -32,6 +33,13 @@ const App = observer(() => {
     
         return () => clearInterval(intervalId);
     }, [session, userinfo]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        if (!!error) setTimeout(()=>{
+            setError(false);
+            logout();
+        }, 6000)
+    }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const getUserinfo = (access_token) => {
         vaclient.userinfo(access_token, (e, result) => {
@@ -161,7 +169,7 @@ const App = observer(() => {
 
                         <div className="header-actions">
                             { session
-                                ? <Dropdown overlay={<Menu><Menu.Item onClick={logout}><LogoutOutlined /><span> Logout </span></Menu.Item></Menu>} trigger={['click']}>
+                                ? <Dropdown overlay={<Menu><Menu.Item onClick={logout}><LogoutOutlined/><span> Logout </span></Menu.Item><Menu.Item><UserSwitchOutlined/><a href={`http://${process.env.REACT_APP_ACCOUNT_HOST}/account/:address=${session.access_token_payload.sub}`} target="_blank" rel="noopener noreferrer"> Account </a></Menu.Item></Menu>} trigger={['click']}>
                                     <div>
                                         <Avatar icon={<UserOutlined />} />
                                         <span className="account-name">{session.access_token_payload.sub.slice(0,4)}..{session.access_token_payload.sub.substr(-4)}</span>
@@ -182,7 +190,12 @@ const App = observer(() => {
                         <div className="try-demo-section">
                             <div className="error">
                                 <h2>Authorization Error</h2>
-                                <p>{error}</p>
+                                <Error400 className="error-400-image"/>
+                                <p>Description: {error}</p>
+                                <div class="border">
+                                    <div class="progress">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     }
