@@ -1,3 +1,6 @@
+.ant-empty {
+    margin: 25px auto !important;
+}
 
 .donate-component {
     background: #fff;
@@ -81,8 +84,6 @@
     color: #409780;
 }
 
-
-
 .donate-content .evm-info {
     padding: 25px;
     border-bottom: 1px solid #e4e4e4;
@@ -92,6 +93,11 @@
     margin: 0;
     text-align: left;
     border-color: #e4e4e4;
+    margin-bottom: 10px;
+}
+
+.donate-content .evm-info .ant-card:last-child {
+    margin-bottom: 0;
 }
 
 .donate-content .evm-info .evm-asset::after {
@@ -137,6 +143,16 @@
 
 .donate-content .actions-info {
     padding: 25px;
+    min-height: 560px;
+}
+
+.donate-content .ant-radio-group {
+    padding-bottom: 10px;
+}
+
+.donate-content .pagination {
+    margin: 0 auto;
+    padding-top: 20px;
 }
 
 .donate-content .actions-info .actions {
@@ -195,4 +211,6 @@
 
 .actions-item .value {
     font-weight: 600;
+    font-size: 12px;
+    line-height: 32px;
 }
