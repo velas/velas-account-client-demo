@@ -63,13 +63,13 @@ EVM.prototype.tokenAddressToSymbol = function(address) {
     return knownSymbol || 'UNKNOWN'
 };
 
-EVM.prototype.transactions = async function(address, cb) {
+EVM.prototype.transactions = async function(address, page_number = 1, cb) {
     try {
         if (!process.env.REACT_APP_HISTORY_HOST) {
             cb([]);
             return;
         }
-        const response = await fetch(`${process.env.REACT_APP_HISTORY_HOST}/transactions/${address}`);
+        const response = await fetch(`${process.env.REACT_APP_HISTORY_HOST}/transactions/${address}?page_number=${page_number}`);
         const result   = await response.json();
 
         cb(result)
