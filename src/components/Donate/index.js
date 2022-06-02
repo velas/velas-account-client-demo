@@ -246,8 +246,8 @@ const Donate = () => {
                                 <Col className="value"   xs={24} md={4} lg={4}>
                                     {transaction.name === 'Send funds'     && evm.amountToValue(transaction.amount) + ' VLX'}
                                     {transaction.name === 'Receive funds'  && evm.amountToValue(transaction.amount) + ' VLX'}
-                                    {transaction.name === 'Send tokens'    && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.tokenAddress)}
-                                    {transaction.name === 'Receive tokens' && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.tokenAddress)}
+                                    {transaction.name === 'Send tokens'    && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.contractAddress)}
+                                    {transaction.name === 'Receive tokens' && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.contractAddress)}
                                     {transaction.name === 'Contract call'  && <RetweetOutlined style={{ fontSize: '20px', marginTop: '5px' }} />}
                                 </Col>
                                 
