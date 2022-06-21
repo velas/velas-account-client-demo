@@ -5,7 +5,7 @@ import {UserOutlined, ShoppingCartOutlined, LogoutOutlined, UserSwitchOutlined} 
 
 import { DemoSection, Background } from './components'
 import { useStores } from './store/RootStore'
-import { vaclient, vaclient_wrong, vaclient_popup }  from './functions/vaclient';
+import { vaclient, vaclient_wrong, vaclient_popup, vaclient_mobile }  from './functions/vaclient';
 import {ReactComponent as Error400} from "./assets/error-400.svg";
 
 const { Header, Content } = Layout;
@@ -143,6 +143,18 @@ const App = observer(() => {
 
         login_4: () => {
             vaclient_wrong.authorize({
+                csrfToken: async function () {
+                    const response = await fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`);
+                    const result = await response.json();
+                    return result.token
+                },
+    
+                scope: 'VelasAccountProgram:Transfer'
+            }, processAuthResult);
+        },
+
+        login_5: () => {
+            vaclient_mobile.authorize({
                 csrfToken: async function () {
                     const response = await fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`);
                     const result = await response.json();

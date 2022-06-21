@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Button, message, Card, Radio, Pagination, Empty } from 'antd';
 import Jdenticon from 'react-jdenticon';
-import { CopyFilled, ArrowDownOutlined, DollarCircleOutlined, MessageOutlined, LinkOutlined, ArrowRightOutlined, RetweetOutlined, WarningOutlined, CheckSquareOutlined } from '@ant-design/icons';
+import { CopyFilled, UserOutlined, ArrowDownOutlined, DollarCircleOutlined, MessageOutlined, LinkOutlined, ArrowRightOutlined, RetweetOutlined, WarningOutlined, CheckSquareOutlined } from '@ant-design/icons';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 
@@ -89,7 +89,7 @@ const Donate = () => {
         const intervalId = setInterval(() => {
             if (userinfo.account_key_evm) {
                 evm.events(setEvents);
-                if(isHistoryEnabled) evm.transactions(userinfo.account_key_evm, range, setTransactions);
+                if(isHistoryEnabled) evm.transactions(userinfo.account_key, range, setTransactions);
             };
             updateBalance();
         }, 4000);
@@ -101,14 +101,14 @@ const Donate = () => {
         
         if (userinfo.account_key_evm) {
             evm.events(setEvents);
-            if(isHistoryEnabled) evm.transactions(userinfo.account_key_evm, range, setTransactions);
+            if(isHistoryEnabled) evm.transactions(userinfo.account_key, range, setTransactions);
         };
     };
 
     const changePage = async (page) => {
         //TO DO: preloader true
         setRange(page);
-        if(isHistoryEnabled) evm.transactions(userinfo.account_key_evm, page, (result)=>{
+        if(isHistoryEnabled) evm.transactions(userinfo.account_key, page, (result)=>{
             //TO DO: preloader false            
             setTransactions(result);
         });
@@ -249,11 +249,13 @@ const Donate = () => {
                                     {transaction.name === 'Send tokens'    && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.contractAddress)}
                                     {transaction.name === 'Receive tokens' && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.contractAddress)}
                                     {transaction.name === 'Contract call'  && <RetweetOutlined style={{ fontSize: '20px', marginTop: '5px' }} />}
+
+                                    {transaction.type === 'native'  && <UserOutlined style={{ fontSize: '20px', marginTop: '5px' }} />}
                                 </Col>
                                 
-                                <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.from} /></Col>
-                                <Col className="value"   xs={24} md={1} lg={1}><ArrowRightOutlined /></Col>
-                                <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.to} /></Col>
+                                <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.type === 'evm' ? transaction.from : transaction.account} /></Col>
+                                { transaction.type === 'evm' && <Col className="value"   xs={24} md={1} lg={1}><ArrowRightOutlined /></Col> }
+                                { transaction.type === 'evm' && <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.to} /></Col> }
                             </Row>
                         ) : <Empty description="There are no matching entries"/>}
 
