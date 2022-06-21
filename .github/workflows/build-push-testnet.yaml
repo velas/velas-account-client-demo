@@ -31,12 +31,13 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           REACT_APP_FAUCET: https://t.me/velas_faucet_bot
           REACT_APP_EVMEXPLORER: https://evmexplorer.testnet.velas.com/tx/
-          REACT_APP_CLIENT_ID: 6ViJbYacQkcnoP3EQKswXi1XptHvunEUVvYV2cTLho3o
+          REACT_APP_CLIENT_ID: BcXGkTcquxpZhBnwPnzQgqbkb2rNZh9d4NhR1V72tLaf
           REACT_APP_REDIRECT_URI: https://account-demo.testnet.velas.com
           REACT_APP_ACCOUNT_HOST: account.testnet.velas.com
           REACT_APP_NETWORK_HOST: https://api.testnet.velas.com
           REACT_APP_SPONSOR_HOST: https://api-sponsor.testnet.velas.com
           REACT_APP_SPONSOR_PUB_KEY: EgJX7GpswpA8z3qRNuzNTgKKjPmw1UMfh5xQjFeVBqAK
+          REACT_APP_HISTORY_HOST: https://api-history.testnet.velas.com
         run: |
           docker build --no-cache --build-arg REACT_APP_CLIENT_ID \
             --build-arg REACT_APP_FAUCET \
@@ -47,6 +48,7 @@ jobs:
             --build-arg REACT_APP_NETWORK_HOST \
             --build-arg REACT_APP_SPONSOR_HOST \
             --build-arg REACT_APP_SPONSOR_PUB_KEY \
+            --build-arg REACT_APP_HISTORY_HOST \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
