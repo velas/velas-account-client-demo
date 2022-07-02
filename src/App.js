@@ -5,7 +5,7 @@ import {UserOutlined, ShoppingCartOutlined, LogoutOutlined, UserSwitchOutlined} 
 
 import { DemoSection, Background } from './components'
 import { useStores } from './store/RootStore'
-import { vaclient, vaclient_wrong, vaclient_popup }  from './functions/vaclient';
+import { vaclient, vaclient_wrong, vaclient_popup, vaclient_mobile }  from './functions/vaclient';
 import {ReactComponent as Error400} from "./assets/error-400.svg";
 
 const { Header, Content } = Layout;
@@ -152,6 +152,18 @@ const App = observer(() => {
                 scope: 'VelasAccountProgram:Transfer'
             }, processAuthResult);
         },
+
+        login_5: () => {
+            vaclient_mobile.authorize({
+                csrfToken: async function () {
+                    const response = await fetch(`${process.env.REACT_APP_SPONSOR_HOST}/csrf`);
+                    const result = await response.json();
+                    return result.token
+                },
+    
+                scope: 'VelasAccountProgram:Transfer'
+            }, processAuthResult);
+        },
     };
 
 
@@ -169,7 +181,7 @@ const App = observer(() => {
 
                         <div className="header-actions">
                             { session
-                                ? <Dropdown overlay={<Menu><Menu.Item onClick={logout}><LogoutOutlined/><span> Logout </span></Menu.Item><Menu.Item><UserSwitchOutlined/><a href={`http://${process.env.REACT_APP_ACCOUNT_HOST}/account/:address=${session.access_token_payload.sub}`} target="_blank" rel="noopener noreferrer"> Account </a></Menu.Item></Menu>} trigger={['click']}>
+                                ? <Dropdown overlay={<Menu><Menu.Item onClick={logout}><LogoutOutlined/><span> Logout </span></Menu.Item><Menu.Item><UserSwitchOutlined/><a href={`http://${process.env.REACT_APP_ACCOUNT_HOST}/account/${session.access_token_payload.sub}`} target="_blank" rel="noopener noreferrer"> Account </a></Menu.Item></Menu>} trigger={['click']}>
                                     <div>
                                         <Avatar icon={<UserOutlined />} />
                                         <span className="account-name">{session.access_token_payload.sub.slice(0,4)}..{session.access_token_payload.sub.substr(-4)}</span>
@@ -192,8 +204,8 @@ const App = observer(() => {
                                 <h2>Authorization Error</h2>
                                 <Error400 className="error-400-image"/>
                                 <p>Description: {error}</p>
-                                <div class="border">
-                                    <div class="progress">
+                                <div className="border">
+                                    <div className="progress">
                                     </div>
                                 </div>
                             </div>
