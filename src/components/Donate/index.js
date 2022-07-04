@@ -18,10 +18,7 @@ const timeAgo = new TimeAgo('en-US');
 const { Meta } = Card;
 
 const isHistoryEnabled = process.env.REACT_APP_HISTORY_HOST;
-
-function paginate(array, page_size, page_number) {
-    return array.slice((page_number - 1) * page_size, page_number * page_size);
-};
+const isTokensEnabled  = process.env.REACT_APP_NETWORK_HOST === 'https://api.testnet.velas.com' || process.env.REACT_APP_NETWORK_HOST === 'https://api.mainnet.velas.com';
 
 const Donate = () => {
 
@@ -196,7 +193,7 @@ const Donate = () => {
                         />
                     </Card>
 
-                    <Card
+                    { isTokensEnabled && <Card
                         className='evm-asset'
                         actions={actionsUSDT()}
                         >
@@ -213,7 +210,7 @@ const Donate = () => {
                                 </>
                             }
                         />
-                    </Card>
+                    </Card> }
                 </div>
 
                 <div className='actions-info'>
