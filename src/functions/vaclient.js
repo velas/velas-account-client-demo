@@ -40,3 +40,15 @@ export const vaclient_popup = new VAClient({
     transactionsSponsorApiHost: process.env.REACT_APP_SPONSOR_HOST,
     transactionsSponsorPubKey:  process.env.REACT_APP_SPONSOR_PUB_KEY,
 });
+
+export const vaclient_mobile = new VAClient({
+    mode:                       'mobile',
+    clientID:                   process.env.REACT_APP_CLIENT_ID,
+    redirectUri:                `${process.env.REACT_APP_REDIRECT_URI}/mobile`,
+    StorageHandler,
+    KeyStorageHandler,
+    accountProviderHost:        process.env.REACT_APP_ACCOUNT_HOST,
+    networkApiHost:             process.env.REACT_APP_NETWORK_HOST,
+    transactionsSponsorApiHost: process.env.REACT_APP_SPONSOR_HOST,
+    transactionsSponsorPubKey:  process.env.REACT_APP_SPONSOR_PUB_KEY,
+});

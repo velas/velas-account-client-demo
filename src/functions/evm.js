@@ -10,11 +10,27 @@ function EVM(from) {
     this.gasPrice = 2000000001;
     this.decimal  = 1000000000000000000;
 
-    this.symbols = {
-        '0x1344531e3d3bceab05a102a75086a249a1d9cd36': 'USDT',
-        '0x1ac1c42ab2c84a3c9f859a52f9eddfef83b7602a': 'BUSD',
-        '0x50ced6b58b829d541526137da3dc179cfcf8274e': 'USDC',
-        '0xa3147291d4b0363e1810f6567c7696f692ab918f': 'ETH',
+    if(process.env.REACT_APP_NETWORK_HOST === 'https://api.mainnet.velas.com') {
+        this.symbols = {
+            '0x01445c31581c354b7338ac35693ab2001b50b9ae': 'USDT',
+            '0xc111c29a988ae0c0087d97b33c6e6766808a3bd3': 'BUSD',
+            '0xe2c120f188ebd5389f71cf4d9c16d05b62a58993': 'USDC',
+            '0x85219708c49aa701871ad330a94ea0f41dff24ca': 'ETH',
+        };
+    } else if (process.env.REACT_APP_NETWORK_HOST === 'https://api.testnet.velas.com') {
+        this.symbols = {
+            '0x1344531e3d3bceab05a102a75086a249a1d9cd36': 'USDT',
+            '0x1ac1c42ab2c84a3c9f859a52f9eddfef83b7602a': 'BUSD',
+            '0x50ced6b58b829d541526137da3dc179cfcf8274e': 'USDC',
+            '0xa3147291d4b0363e1810f6567c7696f692ab918f': 'ETH',
+        };
+    } else {
+        this.symbols = {
+            '0x1344531e3d3bceab05a102a75086a249a1d9cd36': 'USDT',
+            '0x1ac1c42ab2c84a3c9f859a52f9eddfef83b7602a': 'BUSD',
+            '0x50ced6b58b829d541526137da3dc179cfcf8274e': 'USDC',
+            '0xa3147291d4b0363e1810f6567c7696f692ab918f': 'ETH',
+        };
     };
 
     this.maxFee    = Math.ceil((this.gas * this.gasPrice) / this.decimal*100000)/100000;
@@ -24,7 +40,7 @@ function EVM(from) {
     this.donateAddress    = '0xACF8ef3c3f5536513429629428F8324a5D634b39';
 
     this.storage = new this.web3.eth.Contract([{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"num","type":"uint256"},{"indexed":true,"internalType":"address","name":"sender","type":"address"}],"name":"StoreNumber","type":"event"},{"inputs":[],"name":"retrieve","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"num","type":"uint256"}],"name":"store","outputs":[],"stateMutability":"nonpayable","type":"function"}], this.countractAddress);
-    this.erc20   = new this.web3.eth.Contract([{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"}], '0x1344531e3d3bceab05a102a75086a249a1d9cd36')
+    this.erc20   = new this.web3.eth.Contract([{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"}], Object.keys(this.symbols)[0])
 };
 
 EVM.prototype.getBalance = async function() {
@@ -63,13 +79,13 @@ EVM.prototype.tokenAddressToSymbol = function(address) {
     return knownSymbol || 'UNKNOWN'
 };
 
-EVM.prototype.transactions = async function(address, cb) {
+EVM.prototype.transactions = async function(address, page_number = 1, cb) {
     try {
         if (!process.env.REACT_APP_HISTORY_HOST) {
             cb([]);
             return;
         }
-        const response = await fetch(`${process.env.REACT_APP_HISTORY_HOST}/transactions/${address}`);
+        const response = await fetch(`${process.env.REACT_APP_HISTORY_HOST}/transactions/${address}?page_number=${page_number}`);
         const result   = await response.json();
 
         cb(result)

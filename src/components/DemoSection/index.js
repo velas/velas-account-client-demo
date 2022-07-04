@@ -39,6 +39,9 @@ const DemoSection = observer(({ actions }) => {
 
                             <p>Login to test <Popover content={"'VelasAccountProgram:Transfer'"} title="scopes:"><b>wrong client_id</b></Popover> flow</p>
                             <Button onClick={actions.login_4} className="login-button" type="primary"  size={'large'}>Login with Velas Account</Button>
+
+                            <p>Login to test <Popover content={"'VelasAccountProgram:Transfer'"} title="scopes:"><b>mobile</b></Popover> flow</p>
+                            <Button onClick={actions.login_5} className="login-button" type="primary"  size={'large'}>Login with Velas Account</Button>
                         </>}
                     </div>
                 }

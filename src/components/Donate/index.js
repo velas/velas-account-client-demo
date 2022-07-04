@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Button, message, Card, Radio, Pagination, Empty } from 'antd';
 import Jdenticon from 'react-jdenticon';
-import { CopyFilled, ArrowDownOutlined, DollarCircleOutlined, MessageOutlined, LinkOutlined, ArrowRightOutlined, RetweetOutlined, WarningOutlined, CheckSquareOutlined } from '@ant-design/icons';
+import { CopyFilled, UserOutlined, ArrowDownOutlined, DollarCircleOutlined, MessageOutlined, LinkOutlined, ArrowRightOutlined, RetweetOutlined, WarningOutlined, CheckSquareOutlined } from '@ant-design/icons';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 
@@ -18,10 +18,7 @@ const timeAgo = new TimeAgo('en-US');
 const { Meta } = Card;
 
 const isHistoryEnabled = process.env.REACT_APP_HISTORY_HOST;
-
-function paginate(array, page_size, page_number) {
-    return array.slice((page_number - 1) * page_size, page_number * page_size);
-};
+const isTokensEnabled  = process.env.REACT_APP_NETWORK_HOST === 'https://api.testnet.velas.com' || process.env.REACT_APP_NETWORK_HOST === 'https://api.mainnet.velas.com';
 
 const Donate = () => {
 
@@ -89,20 +86,29 @@ const Donate = () => {
         const intervalId = setInterval(() => {
             if (userinfo.account_key_evm) {
                 evm.events(setEvents);
-                if(isHistoryEnabled) evm.transactions(userinfo.account_key_evm, setTransactions);
+                if(isHistoryEnabled) evm.transactions(userinfo.account_key, range, setTransactions);
             };
             updateBalance();
         }, 4000);
         return () => clearInterval(intervalId);
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [range]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const updateAccountInfo = () => {
         updateBalance();
         
         if (userinfo.account_key_evm) {
             evm.events(setEvents);
-            if(isHistoryEnabled) evm.transactions(userinfo.account_key_evm, setTransactions);
+            if(isHistoryEnabled) evm.transactions(userinfo.account_key, range, setTransactions);
         };
+    };
+
+    const changePage = async (page) => {
+        //TO DO: preloader true
+        setRange(page);
+        if(isHistoryEnabled) evm.transactions(userinfo.account_key, page, (result)=>{
+            //TO DO: preloader false            
+            setTransactions(result);
+        });
     };
 
     const handleHisstory = () => {
@@ -187,7 +193,7 @@ const Donate = () => {
                         />
                     </Card>
 
-                    <Card
+                    { isTokensEnabled && <Card
                         className='evm-asset'
                         actions={actionsUSDT()}
                         >
@@ -204,11 +210,11 @@ const Donate = () => {
                                 </>
                             }
                         />
-                    </Card>
+                    </Card> }
                 </div>
 
                 <div className='actions-info'>
-                    { isHistoryEnabled ? <Radio.Group value={history} onChange={()=> { setRange(1); handleHisstory(); }}>
+                    { isHistoryEnabled ? <Radio.Group value={history} onChange={()=> { changePage(1); handleHisstory(); }}>
                         <Radio.Button value="actions">Actions</Radio.Button>
                         <Radio.Button value="transactions">Transactions</Radio.Button>
                     </Radio.Group> : <p className='actions'>Last Actions</p> }
@@ -227,7 +233,7 @@ const Donate = () => {
 
                     { history === 'transactions' && <Row type="flex">
 
-                        { transactions && transactions.length ? paginate(transactions, 10, range).map((transaction, index) =>
+                        { transactions && transactions.result ? transactions.result.map((transaction, index) =>
                             <Row className={'actions-item'} key={index}>
                                 <Col className="value"   xs={24} md={1} lg={1}>{transaction.status === "success" ? <CheckSquareOutlined style={{ fontSize: '20px', marginTop: '5px', color: '#409780' }} /> : <WarningOutlined style={{ fontSize: '20px', marginTop: '5px', color: '#f44336' }} />}</Col>
                                 <Col className="hash"    xs={24} md={5} lg={5}> {process.env.REACT_APP_EVMEXPLORER && <a href={process.env.REACT_APP_EVMEXPLORER + transaction.hash} target="_blank" rel="noopener noreferrer"><LinkOutlined /></a>} {transaction.hash.slice(0,12)}..</Col>
@@ -237,25 +243,27 @@ const Donate = () => {
                                 <Col className="value"   xs={24} md={4} lg={4}>
                                     {transaction.name === 'Send funds'     && evm.amountToValue(transaction.amount) + ' VLX'}
                                     {transaction.name === 'Receive funds'  && evm.amountToValue(transaction.amount) + ' VLX'}
-                                    {transaction.name === 'Send tokens'    && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.tokenAddress)}
-                                    {transaction.name === 'Receive tokens' && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.tokenAddress)}
+                                    {transaction.name === 'Send tokens'    && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.contractAddress)}
+                                    {transaction.name === 'Receive tokens' && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.contractAddress)}
                                     {transaction.name === 'Contract call'  && <RetweetOutlined style={{ fontSize: '20px', marginTop: '5px' }} />}
+
+                                    {transaction.type === 'native'  && <UserOutlined style={{ fontSize: '20px', marginTop: '5px' }} />}
                                 </Col>
                                 
-                                <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.from} /></Col>
-                                <Col className="value"   xs={24} md={1} lg={1}><ArrowRightOutlined /></Col>
-                                <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.to} /></Col>
+                                <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.type === 'evm' ? transaction.from : transaction.account} /></Col>
+                                { transaction.type === 'evm' && <Col className="value"   xs={24} md={1} lg={1}><ArrowRightOutlined /></Col> }
+                                { transaction.type === 'evm' && <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.to} /></Col> }
                             </Row>
                         ) : <Empty description="There are no matching entries"/>}
 
                         { transactions && <Pagination
                             className='pagination'
                             hideOnSinglePage={true}
-                            total={transactions.length}
+                            total={transactions.total}
                             simple={true}
                             defaultPageSize={10}
                             defaultCurrent={1}
-                            onChange={(page)=>{setRange(page)}} 
+                            onChange={changePage} 
                         />}
                         
                     </Row> }
