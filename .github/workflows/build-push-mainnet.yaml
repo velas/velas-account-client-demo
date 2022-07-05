@@ -1,7 +1,7 @@
 name: Build-Deploy-mainnet
 on:
   push:
-    branches: [master,feature/ci_master]
+    branches: [master]
 
 jobs:
   docker-build:
