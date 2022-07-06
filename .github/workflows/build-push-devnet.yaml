@@ -35,6 +35,7 @@ jobs:
           REACT_APP_NETWORK_HOST: https://api.devnet.velas.com
           REACT_APP_SPONSOR_HOST: https://api-sponsor.devnet.velas.com
           REACT_APP_SPONSOR_PUB_KEY: EgJX7GpswpA8z3qRNuzNTgKKjPmw1UMfh5xQjFeVBqAK
+          REACT_APP_HISTORY_HOST: https://api-history.devnet.velas.com
         run: |
           docker build --no-cache --build-arg REACT_APP_CLIENT_ID \
             --build-arg REACT_APP_CLIENT_ID \
@@ -43,6 +44,7 @@ jobs:
             --build-arg REACT_APP_NETWORK_HOST \
             --build-arg REACT_APP_SPONSOR_HOST \
             --build-arg REACT_APP_SPONSOR_PUB_KEY \
+            --build-arg REACT_APP_HISTORY_HOST \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
