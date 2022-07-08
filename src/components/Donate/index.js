@@ -121,9 +121,9 @@ const Donate = () => {
         const array = [];
 
         if (!loading && balance && balance > (evm.maxFee + evm.donateVLX)) {
-            array.push(<span onClick={()=>{evmTransferTransaction(userinfo.account_key_evm)}}><DollarCircleOutlined key="edit" />  DONATE</span>)
+            array.push(<span onClick={()=>{evmTransferTransaction(userinfo.account_key_evm)}}><DollarCircleOutlined key="edit" /> DONATE | {evm.donateVLX}VLX</span>)
         } else {
-            array.push(<span className="disabled"><DollarCircleOutlined key="edit" />  DONATE</span>)
+            array.push(<span className="disabled"><DollarCircleOutlined key="edit" /> DONATE | {evm.donateVLX}VLX</span>)
         };
 
         if (!loading && balance && balance > evm.maxFee) {
@@ -141,9 +141,9 @@ const Donate = () => {
         const array = [];
 
         if (!loading && balance && balance > evm.maxFee && balanceUSDT > evm.donateVLX) {
-            array.push(<span onClick={()=>{evmTransferUSDTTransaction(userinfo.account_key_evm)}}><DollarCircleOutlined key="edit" />  DONATE</span>)
+            array.push(<span onClick={()=>{evmTransferUSDTTransaction(userinfo.account_key_evm)}}><DollarCircleOutlined key="edit" /> DONATE | {evm.donateVLX}USDT</span>)
         } else {
-            array.push(<span className="disabled"><DollarCircleOutlined key="edit" />  DONATE</span>)
+            array.push(<span className="disabled"><DollarCircleOutlined key="edit" /> DONATE | {evm.donateVLX}USDT</span>)
         };
         
         return array;
