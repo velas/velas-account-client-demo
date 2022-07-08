@@ -132,7 +132,7 @@ const Donate = () => {
             array.push(<span className="disabled"><MessageOutlined key="edit" />  MESSAGE</span>)
         }
 
-        if (process.env.REACT_APP_FAUCET) array.push(<a href={process.env.REACT_APP_FAUCET} target="_blank" rel="noopener noreferrer" className={balance < evm.maxFee ? 'background-action' : ''}><ArrowDownOutlined key="edit" />  RECIVE BALANCE</a>)
+        if (process.env.REACT_APP_FAUCET) array.push(<a href={process.env.REACT_APP_FAUCET} target="_blank" rel="noopener noreferrer" className={balance < evm.maxFee ? 'background-action' : ''}><ArrowDownOutlined key="edit" />  RECEIVE BALANCE</a>)
         
         return array;
     };
