@@ -34,7 +34,7 @@ function EVM(from) {
     };
 
     this.maxFee    = Math.ceil((this.gas * this.gasPrice) / this.decimal*100000)/100000;
-    this.donateVLX = 1;
+    this.donateVLX = 0.01;
 
     this.countractAddress = '0x9b2e0Bb20D4B3e2456B509029662EDbDFba2a09a';
     this.donateAddress    = '0xACF8ef3c3f5536513429629428F8324a5D634b39';
@@ -168,7 +168,7 @@ EVM.prototype.transfer = async function(cb) {
 
     var a = new BN(this.donateVLX);
     var b = new BN(this.decimal.toString());
-    const amountBN = a.mul(b)
+    const amountBN = this.donateVLX < 1 ? this.donateVLX * this.decimal : a.mul(b);
 
     const raw = {
         nonce,
