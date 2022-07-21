@@ -40,6 +40,7 @@ jobs:
             --build-arg REACT_APP_SPONSOR_HOST \
             --build-arg REACT_APP_SPONSOR_PUB_KEY \
             --build-arg REACT_APP_HISTORY_HOST \
+            -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
   deploy:
     name: Deploy via Helmfile
