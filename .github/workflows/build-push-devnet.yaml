@@ -76,5 +76,5 @@ jobs:
           helm plugin install https://github.com/jkroepke/helm-secrets --version v3.11.0 || true
           helm plugin install https://github.com/databus23/helm-diff || true
           cd deploy/prod-eu-monster1
-          helmfile -l namespace=testnet,name=velas-account-demo apply  --set image.tag=$IMAGE_TAG,image.repository=$REGISTRY/$REPOSITORY --skip-deps
+          helmfile -l namespace=devnet,name=velas-account-demo apply  --set image.tag=$IMAGE_TAG,image.repository=$REGISTRY/$REPOSITORY --skip-deps
 
