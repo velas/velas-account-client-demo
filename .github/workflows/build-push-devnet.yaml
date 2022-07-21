@@ -32,7 +32,7 @@ jobs:
           REACT_APP_SPONSOR_PUB_KEY: EgJX7GpswpA8z3qRNuzNTgKKjPmw1UMfh5xQjFeVBqAK
           REACT_APP_HISTORY_HOST: https://api-history.devnet.velas.com
         run: |
-          docker build --no-cache --build-arg REACT_APP_CLIENT_ID \
+          docker build --no-cache  \
             --build-arg REACT_APP_CLIENT_ID \
             --build-arg REACT_APP_REDIRECT_URI \
             --build-arg REACT_APP_ACCOUNT_HOST \
