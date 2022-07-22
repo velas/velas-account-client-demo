@@ -236,23 +236,35 @@ const Donate = () => {
                         { transactions && transactions.result ? transactions.result.map((transaction, index) =>
                             <Row className={'actions-item'} key={index}>
                                 <Col className="value"   xs={24} md={1} lg={1}>{transaction.status === "success" ? <CheckSquareOutlined style={{ fontSize: '20px', marginTop: '5px', color: '#409780' }} /> : <WarningOutlined style={{ fontSize: '20px', marginTop: '5px', color: '#f44336' }} />}</Col>
-                                <Col className="hash"    xs={24} md={5} lg={5}> {process.env.REACT_APP_EVMEXPLORER && <a href={process.env.REACT_APP_EVMEXPLORER + transaction.hash} target="_blank" rel="noopener noreferrer"><LinkOutlined /></a>} {transaction.hash.slice(0,12)}..</Col>
+                                <Col className="hash"    xs={24} md={5} lg={5}> 
+                                    { transaction.type === 'evm'    && process.env.REACT_APP_EVMEXPLORER    && <a href={process.env.REACT_APP_EVMEXPLORER + transaction.hash} target="_blank" rel="noopener noreferrer"><LinkOutlined /></a>  }
+                                    { transaction.type === 'native' && process.env.REACT_APP_NATIVEEXPLORER && <a href={process.env.REACT_APP_NATIVEEXPLORER + transaction.hash} target="_blank" rel="noopener noreferrer"><LinkOutlined /></a>  }
+                                    
+                                    {transaction.hash.slice(0,12)}..</Col>
                                 <Col className="value"   xs={24} md={5} lg={5}>{ timeAgo.format(new Date(transaction.timestamp * 1000))}</Col>
                                 <Col className="value"   xs={24} md={4} lg={4}>{transaction.name}</Col>
 
                                 <Col className="value"   xs={24} md={4} lg={4}>
-                                    {transaction.name === 'Send funds'     && evm.amountToValue(transaction.amount) + ' VLX'}
-                                    {transaction.name === 'Receive funds'  && evm.amountToValue(transaction.amount) + ' VLX'}
-                                    {transaction.name === 'Send tokens'    && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.contractAddress)}
-                                    {transaction.name === 'Receive tokens' && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.contractAddress)}
+                                    {transaction.type === 'native' && transaction.amount && evm.amountToValue(transaction.amount, 10) + ' VLX'}
+                                    {transaction.type === 'evm' && transaction.name === 'Send funds'     && evm.amountToValue(transaction.amount) + ' VLX'}
+                                    {transaction.type === 'evm' && transaction.name === 'Receive funds'  && evm.amountToValue(transaction.amount) + ' VLX'}
+                                    {transaction.type === 'evm' && transaction.name === 'Send tokens'    && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.contractAddress)}
+                                    {transaction.type === 'evm' && transaction.name === 'Receive tokens' && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.contractAddress)}
                                     {transaction.name === 'Contract call'  && <RetweetOutlined style={{ fontSize: '20px', marginTop: '5px' }} />}
 
-                                    {transaction.type === 'native'  && <UserOutlined style={{ fontSize: '20px', marginTop: '5px' }} />}
+                                    {transaction.type === 'native' && !transaction.amount && <UserOutlined style={{ fontSize: '20px', marginTop: '5px' }} />}
                                 </Col>
                                 
                                 <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.type === 'evm' ? transaction.from : transaction.account} /></Col>
+
                                 { transaction.type === 'evm' && <Col className="value"   xs={24} md={1} lg={1}><ArrowRightOutlined /></Col> }
                                 { transaction.type === 'evm' && <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.to} /></Col> }
+
+                                { transaction.type === 'native' && transaction.name === 'Receive funds' && <Col className="value"   xs={24} md={1} lg={1}><ArrowRightOutlined /></Col> }
+                                { transaction.type === 'native' && transaction.name === 'Receive funds' && <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.to} /></Col> }
+                            
+                                { transaction.type === 'native' && transaction.name === 'Send funds' && <Col className="value"   xs={24} md={1} lg={1}><ArrowRightOutlined /></Col> }
+                                { transaction.type === 'native' && transaction.name === 'Send funds' && <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.to} /></Col> }
                             </Row>
                         ) : <Empty description="There are no matching entries"/>}
 
