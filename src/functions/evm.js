@@ -66,9 +66,8 @@ EVM.prototype.getUSDTBalance = async function() {
 
 EVM.prototype.amountToValue = function(amount, decimal) {
     decimal = decimal ? '1'.padEnd(decimal, '0') : this.decimal;
-
     var balance = amount;
-        balance = balance / this.decimal;
+        balance = balance / decimal;
         balance = Math.floor(balance*100000)/100000;
 
         return balance;
