@@ -4,8 +4,8 @@ on:
     branches: [master]
 
 env: 
-  APP_NAME: velas-account-history
-  APP_REPO: account-history
+  APP_NAME: velas-account-demo
+  APP_REPO: account-demo
  
 jobs:
   docker-build:
