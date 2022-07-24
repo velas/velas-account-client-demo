@@ -3,26 +3,24 @@ on:
   push:
     branches: [master]
 
+env: 
+  APP_NAME: velas-account-history
+  APP_REPO: account-history
+ 
 jobs:
   docker-build:
     name: Build and push
-    runs-on: build
+    runs-on: mainnet-services
     outputs:
       repository: ${{ steps.build.outputs.repository }}
       image_tag: ${{ steps.build.outputs.image_tag }}
     steps:
       - uses: actions/checkout@v2
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.REGISTRY_USER }}
-          password: ${{ secrets.REGISTRY_PASS }}
-          registry: ${{ secrets.REGISTRY_HOST }}
       - name: Build, tag, and push image 
         id: build
         env:
           REGISTRY: ${{ secrets.REGISTRY_HOST }}/velas
-          REPOSITORY: account-demo
+          REPOSITORY: ${{ env.APP_REPO }}
           IMAGE_TAG: ${{github.sha}}
           REACT_APP_CLIENT_ID: GbFVdaKFXRfpvBDTFHVChZ5umJpjYTvkXZ7oSZMNP8Lb
           REACT_APP_REDIRECT_URI: https://account-demo.velas.com
@@ -47,36 +45,22 @@ jobs:
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
   deploy:
     name: Deploy via Helmfile
-    runs-on: deployer
+    runs-on: mainnet-services
     needs: docker-build
-    container:
-      image: quay.io/roboll/helmfile:v0.142.0
     steps:
-      - name: Install ssh
-        run: apk --update add openssh-client
       - name: Check out velas-infra
         uses: actions/checkout@master
         with:
           repository: velas/velas-infra
           ref: master
           ssh-key: ${{ secrets.SSH_KEY_INFRA }}
-      - uses: azure/k8s-set-context@v2
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBE_CONFIG_DATA_LONDON_RAW }}
-          context: "prod-london"
-      - name: Sops Binary Installer
-        uses: mdgreenwald/mozilla-sops-action@v1.1.0
-      - uses: adnsio/setup-age-action@v1.2.0
       - name: Deploy via helmfile
         id: deploy
         env:
           REGISTRY: ${{ secrets.REGISTRY_HOST }}/velas
-          REPOSITORY: account-demo
+          REPOSITORY: ${{ env.APP_REPO }}
           IMAGE_TAG: ${{github.sha}}
           SOPS_AGE_KEY: ${{ secrets.INFRA_AGE }}
         run: |
-          helm plugin install https://github.com/jkroepke/helm-secrets --version v3.11.0 || true
-          helm plugin install https://github.com/databus23/helm-diff || true
-          cd deploy/prod-london
-          helmfile -l namespace=mainnet,name=velas-account-demo apply  --set image.tag=$IMAGE_TAG,image.repository=$REGISTRY/$REPOSITORY --skip-deps
+          cd deploy
+          helmfile -e ${HELM_ENV} -l namespace=${NAMESPACE},name=${{ env.APP_NAME }} apply  --set image.tag=$IMAGE_TAG,image.repository=$REGISTRY/$REPOSITORY --skip-deps
