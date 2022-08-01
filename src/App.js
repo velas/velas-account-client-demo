@@ -175,7 +175,7 @@ const App = observer(() => {
                     <div className="header-components-wrapper">
                         <div className="left-nav">
                             <h1>Demo Donate</h1> 
-                            <Button type="primary" onClick={()=> {window.location.href = 'https://account-demo-shop.testnet.velas.com'}} size={'large'}><ShoppingCartOutlined /> Demo Shop</Button>
+                            { process.env.REACT_APP_NETWORK_HOST === "https://api.testnet.velas.com" && <Button type="primary" onClick={()=> {window.location.href = 'https://account-demo-shop.testnet.velas.com'}} size={'large'}><ShoppingCartOutlined /> Demo Shop</Button>}
                         </div>
                       
 
