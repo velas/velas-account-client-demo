@@ -1,5 +1,6 @@
 import Web3 from 'web3';
 import BN from 'bn.js';
+import BigNumber from 'bignumber.js'
 
 import { vaclient } from './vaclient';
 
@@ -12,7 +13,7 @@ function EVM(from) {
 
     if(process.env.REACT_APP_NETWORK_HOST === 'https://api.mainnet.velas.com') {
         this.symbols = {
-            '0x01445c31581c354b7338ac35693ab2001b50b9ae': 'USDT',
+            '0x01445C31581c354b7338AC35693AB2001B50b9aE': 'USDT',
             '0xc111c29a988ae0c0087d97b33c6e6766808a3bd3': 'BUSD',
             '0xe2c120f188ebd5389f71cf4d9c16d05b62a58993': 'USDC',
             '0x85219708c49aa701871ad330a94ea0f41dff24ca': 'ETH',
@@ -55,13 +56,13 @@ EVM.prototype.getBalance = async function() {
 
 EVM.prototype.getUSDTBalance = async function() {
     var balance = await this.erc20.methods.balanceOf(this.from).call();
+    var decimal = await this.erc20.methods.decimals().call()
 
-        balance = this.web3.utils.fromWei(balance);
-        balance = Math.floor(balance*100000)/100000;
+    const result = new BigNumber(balance + 'e-' + decimal)
+        .decimalPlaces(4, BigNumber.ROUND_FLOOR)
+        .toString();
 
-        this.balanceUSDT = balance;
-
-        return balance;
+        return result;
 };
 
 EVM.prototype.amountToValue = function(amount, decimal) {
