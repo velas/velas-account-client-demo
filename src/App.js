@@ -114,7 +114,7 @@ const App = observer(() => {
                     const result = await response.json();
                     return result.token
                 },
-                scope: 'authorization',
+                scope: 'authorization VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:4',
                 challenge: 'some_challenge_from_backend'
             }, processAuthResult);
         },
