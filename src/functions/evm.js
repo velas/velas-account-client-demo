@@ -75,16 +75,7 @@ EVM.prototype.amountToValue = function(amount, decimal) {
 };
 
 EVM.prototype.tokenAddressToSymbol = function(address) {
-
-    console.log(
-        "=><>", address
-    )
-
     const knownSymbol = this.symbols[address];
-
-    console.log(
-        "=><>", knownSymbol
-    )
     return knownSymbol || 'UNKNOWN'
 };
 
