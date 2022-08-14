@@ -1,0 +1,66 @@
+name: Build-Deploy-mainnet
+on:
+  push:
+    branches: [master]
+
+env: 
+  APP_NAME: velas-account-demo
+  APP_REPO: account-demo
+ 
+jobs:
+  docker-build:
+    name: Build and push
+    runs-on: mainnet-services
+    outputs:
+      repository: ${{ steps.build.outputs.repository }}
+      image_tag: ${{ steps.build.outputs.image_tag }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build, tag, and push image 
+        id: build
+        env:
+          REGISTRY: ${{ secrets.REGISTRY_HOST }}/velas
+          REPOSITORY: ${{ env.APP_REPO }}
+          IMAGE_TAG: ${{github.sha}}
+          REACT_APP_CLIENT_ID: GbFVdaKFXRfpvBDTFHVChZ5umJpjYTvkXZ7oSZMNP8Lb
+          REACT_APP_REDIRECT_URI: https://account-demo.velas.com
+          REACT_APP_ACCOUNT_HOST: account.mainnet.velas.com
+          REACT_APP_NETWORK_HOST: https://api.mainnet.velas.com
+          REACT_APP_SPONSOR_HOST: https://api-sponsor.mainnet.velas.com
+          REACT_APP_SPONSOR_PUB_KEY: EgJX7GpswpA8z3qRNuzNTgKKjPmw1UMfh5xQjFeVBqAK
+          REACT_APP_HISTORY_HOST: https://api-history.velas.com
+          REACT_APP_ACCOUNT_PROGRAM: VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5
+        run: |
+          docker build --no-cache --build-arg REACT_APP_CLIENT_ID \
+            --build-arg REACT_APP_FAUCET \
+            --build-arg REACT_APP_ACCOUNT_PROGRAM \
+            --build-arg REACT_APP_CLIENT_ID \
+            --build-arg REACT_APP_REDIRECT_URI \
+            --build-arg REACT_APP_ACCOUNT_HOST \
+            --build-arg REACT_APP_NETWORK_HOST \
+            --build-arg REACT_APP_SPONSOR_HOST \
+            --build-arg REACT_APP_SPONSOR_PUB_KEY \
+            --build-arg REACT_APP_HISTORY_HOST \
+            -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+  deploy:
+    name: Deploy via Helmfile
+    runs-on: mainnet-services
+    needs: docker-build
+    steps:
+      - name: Check out velas-infra
+        uses: actions/checkout@master
+        with:
+          repository: velas/velas-infra
+          ref: master
+          ssh-key: ${{ secrets.SSH_KEY_INFRA }}
+      - name: Deploy via helmfile
+        id: deploy
+        env:
+          REGISTRY: ${{ secrets.REGISTRY_HOST }}/velas
+          REPOSITORY: ${{ env.APP_REPO }}
+          IMAGE_TAG: ${{github.sha}}
+          SOPS_AGE_KEY: ${{ secrets.INFRA_AGE }}
+        run: |
+          cd deploy
+          helmfile -e ${HELM_ENV} -l namespace=${NAMESPACE},name=${{ env.APP_NAME }} apply  --set image.tag=$IMAGE_TAG,image.repository=$REGISTRY/$REPOSITORY --skip-deps
