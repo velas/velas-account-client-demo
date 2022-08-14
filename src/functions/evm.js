@@ -13,7 +13,7 @@ function EVM(from) {
 
     if(process.env.REACT_APP_NETWORK_HOST === 'https://api.mainnet.velas.com') {
         this.symbols = {
-            '0x01445C31581c354b7338AC35693AB2001B50b9aE': 'USDT',
+            '0x01445c31581c354b7338ac35693ab2001b50b9ae': 'USDT',
             '0xc111c29a988ae0c0087d97b33c6e6766808a3bd3': 'BUSD',
             '0xe2c120f188ebd5389f71cf4d9c16d05b62a58993': 'USDC',
             '0x85219708c49aa701871ad330a94ea0f41dff24ca': 'ETH',
@@ -75,7 +75,16 @@ EVM.prototype.amountToValue = function(amount, decimal) {
 };
 
 EVM.prototype.tokenAddressToSymbol = function(address) {
+
+    console.log(
+        "=><>", address
+    )
+
     const knownSymbol = this.symbols[address];
+
+    console.log(
+        "=><>", knownSymbol
+    )
     return knownSymbol || 'UNKNOWN'
 };
 
