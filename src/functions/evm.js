@@ -1,5 +1,6 @@
 import Web3 from 'web3';
 import BN from 'bn.js';
+import BigNumber from 'bignumber.js'
 
 import { vaclient } from './vaclient';
 
@@ -55,13 +56,13 @@ EVM.prototype.getBalance = async function() {
 
 EVM.prototype.getUSDTBalance = async function() {
     var balance = await this.erc20.methods.balanceOf(this.from).call();
+    var decimal = await this.erc20.methods.decimals().call()
 
-        balance = this.web3.utils.fromWei(balance);
-        balance = Math.floor(balance*100000)/100000;
+    const result = new BigNumber(balance + 'e-' + decimal)
+        .decimalPlaces(4, BigNumber.ROUND_FLOOR)
+        .toString();
 
-        this.balanceUSDT = balance;
-
-        return balance;
+        return result;
 };
 
 EVM.prototype.amountToValue = function(amount, decimal) {
@@ -215,7 +216,10 @@ EVM.prototype.transferUSDT = async function(cb) {
         csrf_token,
     };
 
-    this.erc20.methods.transfer(this.donateAddress, String(this.donateVLX * this.decimal)).send(raw)
+    const decimal = await this.erc20.methods.decimals().call()
+    const amount  = new BigNumber(this.donateVLX * ('1e' + decimal)).toString();
+
+    this.erc20.methods.transfer(this.donateAddress, String(amount)).send(raw)
         .on('error', function(error){ 
             cb(error.message, null)
         })
