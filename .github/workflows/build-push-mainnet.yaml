@@ -1,16 +1,16 @@
-name: Build-Deploy-testnet
+name: Build-Deploy-mainnet
 on:
   push:
-    branches: [testnet]
+    branches: [master]
 
 env: 
   APP_NAME: velas-account-demo
   APP_REPO: account-demo
-
+ 
 jobs:
   docker-build:
     name: Build and push
-    runs-on:  testnet-services
+    runs-on: mainnet-services
     outputs:
       repository: ${{ steps.build.outputs.repository }}
       image_tag: ${{ steps.build.outputs.image_tag }}
@@ -20,21 +20,20 @@ jobs:
         id: build
         env:
           REGISTRY: ${{ secrets.REGISTRY_HOST }}/velas
-          REPOSITORY: account-demo
+          REPOSITORY: ${{ env.APP_REPO }}
           IMAGE_TAG: ${{github.sha}}
-          REACT_APP_FAUCET: https://t.me/velas_faucet_bot
-          REACT_APP_EVMEXPLORER: https://evmexplorer.testnet.velas.com/tx/
-          REACT_APP_CLIENT_ID: BcXGkTcquxpZhBnwPnzQgqbkb2rNZh9d4NhR1V72tLaf
-          REACT_APP_REDIRECT_URI: https://account-demo.testnet.velas.com
-          REACT_APP_ACCOUNT_HOST: account.testnet.velas.com
-          REACT_APP_NETWORK_HOST: https://api.testnet.velas.com
-          REACT_APP_SPONSOR_HOST: https://api-sponsor.testnet.velas.com
+          REACT_APP_CLIENT_ID: GbFVdaKFXRfpvBDTFHVChZ5umJpjYTvkXZ7oSZMNP8Lb
+          REACT_APP_REDIRECT_URI: https://account-demo.velas.com
+          REACT_APP_ACCOUNT_HOST: account.mainnet.velas.com
+          REACT_APP_NETWORK_HOST: https://api.mainnet.velas.com
+          REACT_APP_SPONSOR_HOST: https://api-sponsor.mainnet.velas.com
           REACT_APP_SPONSOR_PUB_KEY: EgJX7GpswpA8z3qRNuzNTgKKjPmw1UMfh5xQjFeVBqAK
-          REACT_APP_HISTORY_HOST: https://api-history.testnet.velas.com
+          REACT_APP_HISTORY_HOST: https://api-history.velas.com
+          REACT_APP_ACCOUNT_PROGRAM: VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5
         run: |
           docker build --no-cache --build-arg REACT_APP_CLIENT_ID \
             --build-arg REACT_APP_FAUCET \
-            --build-arg REACT_APP_EVMEXPLORER \
+            --build-arg REACT_APP_ACCOUNT_PROGRAM \
             --build-arg REACT_APP_CLIENT_ID \
             --build-arg REACT_APP_REDIRECT_URI \
             --build-arg REACT_APP_ACCOUNT_HOST \
@@ -46,7 +45,7 @@ jobs:
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
   deploy:
     name: Deploy via Helmfile
-    runs-on: testnet-services
+    runs-on: mainnet-services
     needs: docker-build
     steps:
       - name: Check out velas-infra
@@ -65,4 +64,3 @@ jobs:
         run: |
           cd deploy
           helmfile -e ${HELM_ENV} -l namespace=${NAMESPACE},name=${{ env.APP_NAME }} apply  --set image.tag=$IMAGE_TAG,image.repository=$REGISTRY/$REPOSITORY --skip-deps
-

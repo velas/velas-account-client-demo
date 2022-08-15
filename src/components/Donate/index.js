@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Button, message, Card, Radio, Pagination, Empty } from 'antd';
 import Jdenticon from 'react-jdenticon';
-import { CopyFilled, UserOutlined, ArrowDownOutlined, DollarCircleOutlined, MessageOutlined, LinkOutlined, ArrowRightOutlined, RetweetOutlined, WarningOutlined, CheckSquareOutlined } from '@ant-design/icons';
+import { CopyFilled, ClockCircleOutlined, UserOutlined, ArrowDownOutlined, DollarCircleOutlined, MessageOutlined, LinkOutlined, ArrowRightOutlined, RetweetOutlined, WarningOutlined, CheckSquareOutlined } from '@ant-design/icons';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 
@@ -132,7 +132,7 @@ const Donate = () => {
             array.push(<span className="disabled"><MessageOutlined key="edit" />  MESSAGE</span>)
         }
 
-        if (process.env.REACT_APP_FAUCET) array.push(<a href={process.env.REACT_APP_FAUCET} target="_blank" rel="noopener noreferrer" className={balance < evm.maxFee ? 'background-action' : ''}><ArrowDownOutlined key="edit" />  RECIVE BALANCE</a>)
+        if (process.env.REACT_APP_FAUCET) array.push(<a href={process.env.REACT_APP_FAUCET} target="_blank" rel="noopener noreferrer" className={balance < evm.maxFee ? 'background-action' : ''}><ArrowDownOutlined key="edit" />  RECEIVE BALANCE</a>)
         
         return array;
     };
@@ -235,7 +235,11 @@ const Donate = () => {
 
                         { transactions && transactions.result ? transactions.result.map((transaction, index) =>
                             <Row className={'actions-item'} key={index}>
-                                <Col className="value"   xs={24} md={1} lg={1}>{transaction.status === "success" ? <CheckSquareOutlined style={{ fontSize: '20px', marginTop: '5px', color: '#409780' }} /> : <WarningOutlined style={{ fontSize: '20px', marginTop: '5px', color: '#f44336' }} />}</Col>
+                                <Col className="value"   xs={24} md={1} lg={1}>
+                                    {transaction.status === "success"  && <CheckSquareOutlined style={{ fontSize: '20px', marginTop: '5px', color: '#409780' }} /> }
+                                    {transaction.status === "reverted" && <WarningOutlined     style={{ fontSize: '20px', marginTop: '5px', color: '#f44336' }} /> }
+                                    {transaction.status === "pending"  && <ClockCircleOutlined style={{ fontSize: '20px', marginTop: '5px', color: '#ff9800' }} /> }
+                                </Col>  
                                 <Col className="hash"    xs={24} md={5} lg={5}> 
                                     { transaction.type === 'evm'    && process.env.REACT_APP_EVMEXPLORER    && <a href={process.env.REACT_APP_EVMEXPLORER + transaction.hash} target="_blank" rel="noopener noreferrer"><LinkOutlined /></a>  }
                                     { transaction.type === 'native' && process.env.REACT_APP_NATIVEEXPLORER && <a href={process.env.REACT_APP_NATIVEEXPLORER + transaction.hash} target="_blank" rel="noopener noreferrer"><LinkOutlined /></a>  }
