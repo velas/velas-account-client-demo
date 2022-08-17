@@ -114,7 +114,7 @@ const App = observer(() => {
                     const result = await response.json();
                     return result.token
                 },
-                scope: 'authorization VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:4',
+                scope: 'authorization',
                 challenge: 'some_challenge_from_backend'
             }, processAuthResult);
         },
@@ -126,7 +126,7 @@ const App = observer(() => {
                     const result = await response.json();
                     return result.token
                 },
-                scope: 'VelasAccountProgram:LockOperational VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM:Execute VAcccHVjpknkW5N5R9sfRppQxYJrJYVV7QJGKchkQj5:4'
+                scope: 'VelasAccountProgram:LockOperational VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM:Execute'
             }, processAuthResult);
         },
 
