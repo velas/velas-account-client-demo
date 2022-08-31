@@ -30,4 +30,5 @@ FROM nginx:stable-alpine as production-stage
 
 COPY --from=build-stage /app/build /usr/share/nginx/html
 EXPOSE 80
+COPY nginx_config.conf /etc/nginx/conf.d/default.conf
 CMD ["nginx", "-g", "daemon off;"]
