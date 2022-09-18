@@ -118,6 +118,24 @@
     }
 }
 
+.donate-content .evm-info .native-asset::after {
+    content: 'Native';
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    background-color: #4841ad;
+    padding: 2px 8px;
+    color: #ffffff;
+}
+
+@media (max-width:800px) {
+    .donate-content .evm-info .native-asset li {
+        width: 100% !important;
+    }
+}
+
 .donate-content .evm-info .assets {
     text-align: left;
     font-weight: 700;

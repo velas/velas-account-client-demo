@@ -5,7 +5,8 @@ import { CopyFilled, ClockCircleOutlined, UserOutlined, ArrowDownOutlined, Dolla
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 
-import EVM from '../../functions/evm';
+import EVM    from '../../functions/evm';
+import NATIVE from '../../functions/native';
 
 import { useStores } from '../../store/RootStore';
 
@@ -24,7 +25,11 @@ const Donate = () => {
 
     const { authStore: { userinfo }} = useStores();
 
-    const evm = new EVM(userinfo.account_key_evm);
+    const evm    = new EVM(userinfo.account_key_evm);
+    const native = new NATIVE(userinfo.account_key, userinfo.session_key);
+
+    const [balanceNative,        setBalanceNative]        = useState(0);
+    const [balanceSessionNative, setBalanceSessionNative] = useState(0);
 
     const [balance,      setBalance]      = useState(0);
     const [balanceUSDT,  setBalanceUSDT]  = useState(0);
@@ -32,7 +37,10 @@ const Donate = () => {
     const [transactions, setTransactions] = useState([]);
     const [loading,      setLoading]      = useState(false);
     const [history,      setHistory]      = useState('actions');
-    const [range,        setRange]        = useState(1)
+    const [range,        setRange]        = useState(1);
+
+    const [evmSponsor, setEvmSponsor] = useState('auto');
+    const [nativeSponsor, setNativeSponsor] = useState('auto');
 
     const evmContractTransaction = async () => {
         setLoading(true);
@@ -80,6 +88,8 @@ const Donate = () => {
     const updateBalance = async () => {
         setBalance(await evm.getBalance());
         setBalanceUSDT(await evm.getUSDTBalance());
+        //setBalanceNative(await native.getAccountBalance());
+        //setBalanceSessionNative(await native.getSessionBalance());
     };
 
     useEffect(() => {
@@ -120,10 +130,10 @@ const Donate = () => {
     const actions = () => {
         const array = [];
 
-        if (!loading && balance && balance > (evm.maxFee + evm.donateVLX)) {
-            array.push(<span onClick={()=>{evmTransferTransaction(userinfo.account_key_evm)}}><DollarCircleOutlined key="edit" /> DONATE | {evm.donateVLX}VLX</span>)
+        if (!loading && balance && balance > (evm.maxFee + evm.donateAmount)) {
+            array.push(<span onClick={()=>{evmTransferTransaction(userinfo.account_key_evm)}}><DollarCircleOutlined key="edit" /> DONATE | {evm.donateAmount}VLX</span>)
         } else {
-            array.push(<span className="disabled"><DollarCircleOutlined key="edit" /> DONATE | {evm.donateVLX}VLX</span>)
+            array.push(<span className="disabled"><DollarCircleOutlined key="edit" /> DONATE | {evm.donateAmount}VLX</span>)
         };
 
         if (!loading && balance && balance > evm.maxFee) {
@@ -139,15 +149,36 @@ const Donate = () => {
 
     const actionsUSDT = () => {
         const array = [];
-
-        if (!loading && balance && balance > evm.maxFee && balanceUSDT > evm.donateVLX) {
-            array.push(<span onClick={()=>{evmTransferUSDTTransaction(userinfo.account_key_evm)}}><DollarCircleOutlined key="edit" /> DONATE | {evm.donateVLX}USDT</span>)
+        if (!loading && balanceUSDT > evm.donateAmount) { // + blance on native address
+        //if (!loading && balance && balance > evm.maxFee && balanceUSDT > evm.donateAmount) {
+            array.push(<span onClick={()=>{evmTransferUSDTTransaction(userinfo.account_key_evm)}}><DollarCircleOutlined key="edit" /> DONATE | {evm.donateAmount}USDT</span>)
         } else {
-            array.push(<span className="disabled"><DollarCircleOutlined key="edit" /> DONATE | {evm.donateVLX}USDT</span>)
+            array.push(<span className="disabled"><DollarCircleOutlined key="edit" /> DONATE | {evm.donateAmount}USDT</span>)
         };
         
         return array;
     };
+
+    // const optionsNative = [
+    //     { label: 'Auto', value: 'auto' },
+    //     { label: 'My native account', value: 'native' },
+    //     { label: 'Sponsor account', value: 'sponsor' },
+    // ];
+
+    // const optionsEVM = [
+    //     { label: 'Auto', value: 'auto' },
+    //     { label: 'My evm account', value: 'evm' },
+    //     { label: 'My native account', value: 'native' },
+    //     { label: 'Sponsor account', value: 'sponsor' },
+    // ];
+    
+    // const onChangeNativeSponsor = ({ target: { value } }) => {
+    //     setNativeSponsor(value);
+    // };
+
+    // const onChangeEvmSponsor = ({ target: { value } }) => {
+    //     setEvmSponsor(value);
+    // };
 
     return(
         <Row className='donate-component'>
@@ -174,6 +205,40 @@ const Donate = () => {
 
                 <div className='evm-info'>
                     <p className='assets'>My assets</p>
+                    {/* <Card
+                        className='native-asset'
+                        >
+                        <Meta
+                            avatar={<Jdenticon className="user-icon" size="50" value={userinfo.account_key} />}
+                            title={'VLX ' + (balanceNative === 0 ? '0.00' : balanceNative)}
+                            description={
+                                <>
+                                    <b>{userinfo.account_key.slice(0,11)}..{userinfo.account_key.substr(-11)}</b>
+                                    <CopyFilled className='copy' onClick={() => {
+                                        navigator.clipboard.writeText(userinfo.account_key);
+                                        message.info(`Copied to clipboard`);
+                                    }} />
+                                </>
+                            }
+                        />
+                    </Card>
+                    <Card
+                        className='native-asset'
+                        >
+                        <Meta
+                            avatar={<Jdenticon className="user-icon" size="50" value={userinfo.session_key} />}
+                            title={'VLX ' + (balanceSessionNative === 0 ? '0.00' : balanceSessionNative)}
+                            description={
+                                <>
+                                    <b>{userinfo.session_key.slice(0,11)}..{userinfo.session_key.substr(-11)}</b>
+                                    <CopyFilled className='copy' onClick={() => {
+                                        navigator.clipboard.writeText(userinfo.session_key);
+                                        message.info(`Copied to clipboard`);
+                                    }} />
+                                </>
+                            }
+                        />
+                    </Card> */}
                     <Card
                         className='evm-asset'
                         actions={actions()}
