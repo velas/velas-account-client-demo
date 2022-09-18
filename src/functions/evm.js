@@ -17,6 +17,22 @@ function EVM(from) {
             '0xc111c29a988ae0c0087d97b33c6e6766808a3bd3': 'BUSD',
             '0xe2c120f188ebd5389f71cf4d9c16d05b62a58993': 'USDC',
             '0x85219708c49aa701871ad330a94ea0f41dff24ca': 'ETH',
+            '0xcd7509b76281223f5b7d3ad5d47f8d7aa5c2b9bf': 'USDV',
+            '0x8a74bc8c372bc7f0e9ca3f6ac0df51be15aec47a': 'PLSPAD',
+            '0x8d9fb713587174ee97e91866050c383b5cee6209': 'SCAR',
+            '0x9ab70e92319f0b9127df78868fd3655fb9f1e322': 'WWY',
+            '0x9b6fbf0ea23faf0d77b94d5699b44062e5e747ac': 'SWAPZ',
+            '0x09bce7716d46459df7473982fd27a96eabd6ee4d': 'BITORB',
+            '0x72eb7ca07399ec402c5b7aa6a65752b6a1dc0c27': 'ASTRO',
+            '0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c': 'WBTC',
+            '0x2217e5921b7edfb4bb193a6228459974010d2198': 'QMALL',
+            '0x32561fa6d2d3e2191bf50f813df2c34fb3c89b62': 'VERVE',
+            '0x62858686119135cc00c4a3102b436a0eb314d402': 'METAV',
+            '0xa065e0858417dfc7abc6f2bd4d0185332475c180': 'VLXPAD',
+            '0xabf26902fd7b624e0db40d31171ea9dddf078351': 'WAG',
+            '0xc9f020b8e6ef6c5c34483ab4c3a5f45661e8f26e': 'VINU',
+            '0xd12f7a98c0d740e7ec82e8caf94eb79c56d1b623': 'VDGT',
+            '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d': 'DAI',
         };
     } else if (process.env.REACT_APP_NETWORK_HOST === 'https://api.testnet.velas.com') {
         this.symbols = {
@@ -34,8 +50,8 @@ function EVM(from) {
         };
     };
 
-    this.maxFee    = Math.ceil((this.gas * this.gasPrice) / this.decimal*100000)/100000;
-    this.donateVLX = 0.01;
+    this.maxFee       = Math.ceil((this.gas * this.gasPrice) / this.decimal*100000)/100000;
+    this.donateAmount = 0.01;
 
     this.countractAddress = '0x9b2e0Bb20D4B3e2456B509029662EDbDFba2a09a';
     this.donateAddress    = '0xACF8ef3c3f5536513429629428F8324a5D634b39';
@@ -46,12 +62,12 @@ function EVM(from) {
 
 EVM.prototype.getBalance = async function() {
     var balance = await this.web3.eth.getBalance(this.from);
-        balance = this.web3.utils.fromWei(balance, 'ether');
-        balance = Math.floor(balance*100000)/100000;
 
-        this.balance = balance;
+    const result = new BigNumber(balance + 'e-' + 18)
+        .decimalPlaces(5, BigNumber.ROUND_FLOOR)
+        .toString();
 
-        return balance;
+    return result;
 };
 
 EVM.prototype.getUSDTBalance = async function() {
@@ -59,10 +75,10 @@ EVM.prototype.getUSDTBalance = async function() {
     var decimal = await this.erc20.methods.decimals().call()
 
     const result = new BigNumber(balance + 'e-' + decimal)
-        .decimalPlaces(4, BigNumber.ROUND_FLOOR)
+        .decimalPlaces(5, BigNumber.ROUND_FLOOR)
         .toString();
 
-        return result;
+    return result;
 };
 
 EVM.prototype.amountToValue = function(amount, decimal) {
@@ -148,8 +164,11 @@ EVM.prototype.events = async function(cb) {
 };
 
 EVM.prototype.transfer = async function(cb) {
-    if (this.balance < (this.donateVLX + this.maxFee)) {
-        cb(`No enough VLX for this transaction ${ this.donateVLX + this.maxFee } VLX`, null);
+
+    const balance = await this.getBalance();
+
+    if (balance < (this.donateAmount + this.maxFee)) {
+        cb(`No enough VLX for this transaction ${ this.donateAmount + this.maxFee } VLX`, null);
         return;
     };
 
@@ -166,9 +185,9 @@ EVM.prototype.transfer = async function(cb) {
 
     const nonce = await this.web3.eth.getTransactionCount(this.from);
 
-    var a = new BN(this.donateVLX);
+    var a = new BN(this.donateAmount);
     var b = new BN(this.decimal.toString());
-    const amountBN = this.donateVLX < 1 ? this.donateVLX * this.decimal : a.mul(b);
+    const amountBN = this.donateAmount < 1 ? this.donateAmount * this.decimal : a.mul(b);
 
     const raw = {
         nonce,
@@ -185,13 +204,20 @@ EVM.prototype.transfer = async function(cb) {
 };
 
 EVM.prototype.transferUSDT = async function(cb) {
-    if (this.balance < this.maxFee) {
-        cb(`No enough VLX for this transaction (${ this.maxFee } VLX).`, null);
-        return;
+
+    const balance       = await this.getBalance();
+    const balanceUSDT   = await this.getUSDTBalance();
+
+    let gasSponsoring = false;
+
+    if (balance < this.maxFee) {
+        //cb(`No enough VLX to pay fee (need ${ this.maxFee } VLX).`, null);
+        //return;
+        gasSponsoring = true;
     };
 
-    if (this.balanceUSDT < this.donateVLX) {
-        cb(`No enough USDT for this transaction (${ this.maxFee } VLX).`, null);
+    if (balanceUSDT < this.donateAmount) {
+        cb(`No enough USDT for this transaction (need ${ balanceUSDT } USDT).`, null);
         return;
     };
 
@@ -208,16 +234,17 @@ EVM.prototype.transferUSDT = async function(cb) {
     this.nonce = await this.web3.eth.getTransactionCount(this.from);
 
     const raw = {
-        nonce:    this.nonce,
-        from:     this.from,
-        gas:      this.web3.utils.toHex(this.gas),
-        gasPrice: this.web3.utils.toHex(this.gasPrice),
+        nonce:     this.nonce,
+        from:      this.from,
+        gas:       this.web3.utils.toHex(this.gas),
+        gasPrice:  this.web3.utils.toHex(this.gasPrice),
+        gasSponsoring,
         broadcast: true,
         csrf_token,
     };
 
     const decimal = await this.erc20.methods.decimals().call()
-    const amount  = new BigNumber(this.donateVLX * ('1e' + decimal)).toString();
+    const amount  = new BigNumber(this.donateAmount * ('1e' + decimal)).toString();
 
     this.erc20.methods.transfer(this.donateAddress, String(amount)).send(raw)
         .on('error', function(error){ 
