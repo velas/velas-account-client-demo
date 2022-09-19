@@ -315,10 +315,10 @@ const Donate = () => {
 
                                 <Col className="value"   xs={24} md={4} lg={4}>
                                     {transaction.type === 'native' && transaction.amount && evm.amountToValue(transaction.amount, 10) + ' VLX'}
-                                    {transaction.type === 'evm' && transaction.name === 'Send funds'     && evm.amountToValue(transaction.amount) + ' VLX'}
-                                    {transaction.type === 'evm' && transaction.name === 'Receive funds'  && evm.amountToValue(transaction.amount) + ' VLX'}
-                                    {transaction.type === 'evm' && transaction.name === 'Send tokens'    && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.contractAddress)}
-                                    {transaction.type === 'evm' && transaction.name === 'Receive tokens' && evm.amountToValue(transaction.amount) + ' ' + evm.tokenAddressToSymbol(transaction.contractAddress)}
+                                    {transaction.type === 'evm' && transaction.name === 'Send funds'     && evm.amountToValue(transaction.amount, 18) + ' VLX'}
+                                    {transaction.type === 'evm' && transaction.name === 'Receive funds'  && evm.amountToValue(transaction.amount, 18) + ' VLX'}
+                                    {transaction.type === 'evm' && transaction.name === 'Send tokens'    && evm.amountToValue(transaction.amount, transaction.tokenDecimals) + ' ' + evm.tokenAddressToSymbol(transaction.contractAddress)}
+                                    {transaction.type === 'evm' && transaction.name === 'Receive tokens' && evm.amountToValue(transaction.amount, transaction.tokenDecimals) + ' ' + evm.tokenAddressToSymbol(transaction.contractAddress)}
                                     {transaction.name === 'Contract call'  && <RetweetOutlined style={{ fontSize: '20px', marginTop: '5px' }} />}
 
                                     {transaction.type === 'native' && !transaction.amount && <UserOutlined style={{ fontSize: '20px', marginTop: '5px' }} />}

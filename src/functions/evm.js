@@ -81,13 +81,12 @@ EVM.prototype.getUSDTBalance = async function() {
     return result;
 };
 
-EVM.prototype.amountToValue = function(amount, decimal) {
-    decimal = decimal ? '1'.padEnd(decimal, '0') : this.decimal;
-    var balance = amount;
-        balance = balance / decimal;
-        balance = Math.floor(balance*100000)/100000;
+EVM.prototype.amountToValue = function(amount, decimal = 18) {
+    const result = new BigNumber(amount + 'e-' + decimal)
+        .decimalPlaces(5, BigNumber.ROUND_FLOOR)
+        .toString();
 
-        return balance;
+    return result;
 };
 
 EVM.prototype.tokenAddressToSymbol = function(address) {
