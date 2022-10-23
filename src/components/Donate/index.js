@@ -195,7 +195,7 @@ const Donate = () => {
                     <Jdenticon className="user-icon" size="80" value={userinfo.account_key} />
                     <h2>Hey! Welcome</h2>
                     <p>
-                        <b>{userinfo.account_key.slice(0,6)}..{userinfo.account_key.substr(-6)}</b>
+                        <b>{userinfo.account_name}</b>
                         <CopyFilled className='copy' onClick={() => {
                             navigator.clipboard.writeText(userinfo.account_key);
                             message.info(`Copied to clipboard`);

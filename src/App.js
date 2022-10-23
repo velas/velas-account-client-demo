@@ -126,7 +126,7 @@ const App = observer(() => {
                     const result = await response.json();
                     return result.token
                 },
-                scope: 'VelasAccountProgram:LockOperational VelasAccountProgram:SponsorAndExecute'
+                scope: 'VelasAccountProgram:LockOperational VelasAccountProgram:Transfer VelasAccountProgram:Execute EVM:Execute VelasAccountProgram:SponsorAndExecute'
             }, processAuthResult);
         },
 
@@ -180,15 +180,16 @@ const App = observer(() => {
                       
 
                         <div className="header-actions">
-                            { session
-                                ? <Dropdown overlay={<Menu><Menu.Item onClick={logout}><LogoutOutlined/><span> Logout </span></Menu.Item><Menu.Item><UserSwitchOutlined/><a href={`http://${process.env.REACT_APP_ACCOUNT_HOST}/account/${session.access_token_payload.sub}`} target="_blank" rel="noopener noreferrer"> Account </a></Menu.Item></Menu>} trigger={['click']}>
+                            { !loading && session && userinfo &&
+                                <Dropdown overlay={<Menu><Menu.Item onClick={logout}><LogoutOutlined/><span> Logout </span></Menu.Item><Menu.Item><UserSwitchOutlined/><a href={`http://${process.env.REACT_APP_ACCOUNT_HOST}/account/${session.access_token_payload.sub}`} target="_blank" rel="noopener noreferrer"> Account </a></Menu.Item></Menu>} trigger={['click']}>
                                     <div>
                                         <Avatar icon={<UserOutlined />} />
-                                        <span className="account-name">{session.access_token_payload.sub.slice(0,4)}..{session.access_token_payload.sub.substr(-4)}</span>
+                                        <span className="account-name">{userinfo.account_name}</span>
                                     </div>
-                                  </Dropdown>
-                                : <Button type="primary" onClick={login.default} size={'large'}><UserOutlined/>Login</Button>
+                                </Dropdown>
                             }
+
+                            { !session && !loading && <Button type="primary" onClick={login.default} size={'large'}><UserOutlined/>Login</Button> }
                         </div>
                     </div>
                 </Header>
