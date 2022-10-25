@@ -192,12 +192,12 @@ const Donate = () => {
             <Col className='donate-content' xs={24} md={16} lg={16}>
                 
                 <div className='user-info'>
-                    <Jdenticon className="user-icon" size="80" value={userinfo.account_key} />
+                    <Jdenticon className="user-icon" size="80" value={userinfo.account_key_evm} />
                     <h2>Hey! Welcome</h2>
                     <p>
-                        <b>{userinfo.account_key.slice(0,6)}..{userinfo.account_key.substr(-6)}</b>
+                        <b>{userinfo.account_name}</b>
                         <CopyFilled className='copy' onClick={() => {
-                            navigator.clipboard.writeText(userinfo.account_key);
+                            navigator.clipboard.writeText(userinfo.account_name);
                             message.info(`Copied to clipboard`);
                         }} />
                     </p>
