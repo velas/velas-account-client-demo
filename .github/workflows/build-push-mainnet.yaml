@@ -24,7 +24,7 @@ jobs:
           IMAGE_TAG: ${{github.sha}}
           REACT_APP_CLIENT_ID: GbFVdaKFXRfpvBDTFHVChZ5umJpjYTvkXZ7oSZMNP8Lb
           REACT_APP_REDIRECT_URI: https://account-demo.velas.com
-          REACT_APP_ACCOUNT_HOST: account.mainnet.velas.com
+          REACT_APP_ACCOUNT_HOST: account.velas.com
           REACT_APP_NETWORK_HOST: https://api.mainnet.velas.com
           REACT_APP_SPONSOR_HOST: https://api-sponsor.mainnet.velas.com
           REACT_APP_SPONSOR_PUB_KEY: EgJX7GpswpA8z3qRNuzNTgKKjPmw1UMfh5xQjFeVBqAK
