@@ -33,6 +33,7 @@ function EVM(from) {
             '0xc9f020b8e6ef6c5c34483ab4c3a5f45661e8f26e': 'VINU',
             '0xd12f7a98c0d740e7ec82e8caf94eb79c56d1b623': 'VDGT',
             '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d': 'DAI',
+            '0x2b8e9cd44c9e09d936149549a8d207c918ecb5c4': 'BNB',
         };
     } else if (process.env.REACT_APP_NETWORK_HOST === 'https://api.testnet.velas.com') {
         this.symbols = {
@@ -81,13 +82,12 @@ EVM.prototype.getUSDTBalance = async function() {
     return result;
 };
 
-EVM.prototype.amountToValue = function(amount, decimal) {
-    decimal = decimal ? '1'.padEnd(decimal, '0') : this.decimal;
-    var balance = amount;
-        balance = balance / decimal;
-        balance = Math.floor(balance*100000)/100000;
+EVM.prototype.amountToValue = function(amount, decimal = 18) {
+    const result = new BigNumber(amount + 'e-' + decimal)
+        .decimalPlaces(5, BigNumber.ROUND_FLOOR)
+        .toString();
 
-        return balance;
+    return result;
 };
 
 EVM.prototype.tokenAddressToSymbol = function(address) {
