@@ -52,6 +52,7 @@ const App = observer(() => {
                     logout();
                 };
             } else {
+                console.log("userinfo", result.userinfo);
                 setUserinfo(result.userinfo);
             };
 
