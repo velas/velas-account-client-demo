@@ -196,10 +196,6 @@ const Donate = () => {
                     <h2>Hey! Welcome</h2>
                     <p>
                         <b>{userinfo.account_name}</b>
-                        <CopyFilled className='copy' onClick={() => {
-                            navigator.clipboard.writeText(userinfo.account_name);
-                            message.info(`Copied to clipboard`);
-                        }} />
                     </p>
                 </div>
 
