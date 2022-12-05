@@ -48,7 +48,7 @@ const Donate = () => {
             case 'Initialize':
                 return 'Initialize account'
 
-            case 'addOperational':
+            case 'AddOperational':
                 return 'Login'
 
             case 'AddOwner':
