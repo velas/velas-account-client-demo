@@ -42,6 +42,47 @@ const Donate = () => {
     const [evmSponsor, setEvmSponsor] = useState('auto');
     const [nativeSponsor, setNativeSponsor] = useState('auto');
 
+    const transactionNamePretify = (name) => {
+
+        switch(name) {
+            case 'Initialize':
+                return 'Initialize account'
+
+            case 'AddOperational':
+                return 'Login'
+
+            case 'AddProgram':
+                return 'Add program'
+
+            case 'AddOwner':
+                return 'Add owner'
+
+            case 'ExtendOperational':
+                return 'Extend scopes'
+
+            case 'MergeOperational':
+                return 'Merge'
+
+            case 'ReplaceOwner':
+                return 'Replace owner'
+
+            case 'RemoveOwner':
+                return 'Remove owner'
+
+            case 'RemoveOperational':
+                return 'Logout'
+
+            case 'RemoveProgramPermission':
+                return 'Remove permission'
+            
+            case 'SponsorAndExecute':
+                return 'Sponsor and Execute'
+
+            default:
+                return name
+        };
+    };
+
     const evmContractTransaction = async () => {
         setLoading(true);
         evm.contract((error, result) => {
@@ -182,24 +223,20 @@ const Donate = () => {
 
     return(
         <Row className='donate-component'>
-            <Col className='donate-welcome' xs={24} md={8} lg={8}>
+            <Col className='donate-welcome' xs={24} md={6} lg={6}>
                 <div className='bg'></div>
                 <img alt="velas" src={velas} />
                 <h2><b>Velas Account</b></h2>
                 <p>Private and Passwordless access with crypto-payment infrastructure on your site in a few easy steps:</p>
                 <Button onClick={()=>{window.location.href='https://www.npmjs.com/package/@velas/account-client'}} className="login-button" type="primary"  size={'large'}>Read more</Button>
             </Col>
-            <Col className='donate-content' xs={24} md={16} lg={16}>
+            <Col className='donate-content' xs={24} md={18} lg={18}>
                 
                 <div className='user-info'>
                     <Jdenticon className="user-icon" size="80" value={userinfo.account_key_evm} />
                     <h2>Hey! Welcome</h2>
                     <p>
                         <b>{userinfo.account_name}</b>
-                        <CopyFilled className='copy' onClick={() => {
-                            navigator.clipboard.writeText(userinfo.account_name);
-                            message.info(`Copied to clipboard`);
-                        }} />
                     </p>
                 </div>
 
@@ -308,12 +345,12 @@ const Donate = () => {
                                 <Col className="hash"    xs={24} md={5} lg={5}> 
                                     { transaction.type === 'evm'    && process.env.REACT_APP_EVMEXPLORER    && <a href={process.env.REACT_APP_EVMEXPLORER + transaction.hash} target="_blank" rel="noopener noreferrer"><LinkOutlined /></a>  }
                                     { transaction.type === 'native' && process.env.REACT_APP_NATIVEEXPLORER && <a href={process.env.REACT_APP_NATIVEEXPLORER + transaction.hash} target="_blank" rel="noopener noreferrer"><LinkOutlined /></a>  }
-                                    
-                                    {transaction.hash.slice(0,12)}..</Col>
+                                    &nbsp;
+                                    {transaction.hash.slice(0,10)}..</Col>
                                 <Col className="value"   xs={24} md={5} lg={5}>{ timeAgo.format(new Date(transaction.timestamp * 1000))}</Col>
-                                <Col className="value"   xs={24} md={4} lg={4}>{transaction.name}</Col>
+                                <Col className="value"   xs={24} md={6} lg={6}>{transactionNamePretify(transaction.name)}</Col>
 
-                                <Col className="value"   xs={24} md={4} lg={4}>
+                                <Col className="value"   xs={24} md={3} lg={3}>
                                     {transaction.type === 'native' && transaction.amount && evm.amountToValue(transaction.amount, 10) + ' VLX'}
                                     {transaction.type === 'evm' && transaction.name === 'Send funds'     && evm.amountToValue(transaction.amount, 18) + ' VLX'}
                                     {transaction.type === 'evm' && transaction.name === 'Receive funds'  && evm.amountToValue(transaction.amount, 18) + ' VLX'}
@@ -324,16 +361,16 @@ const Donate = () => {
                                     {transaction.type === 'native' && !transaction.amount && <UserOutlined style={{ fontSize: '20px', marginTop: '5px' }} />}
                                 </Col>
                                 
-                                <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.type === 'evm' ? transaction.from : transaction.account} /></Col>
+                                <Col className="logo"    xs={24} md={1} lg={1}><Jdenticon className="user-icon" size="30" value={transaction.type === 'evm' ? transaction.from : transaction.account} /></Col>
 
                                 { transaction.type === 'evm' && <Col className="value"   xs={24} md={1} lg={1}><ArrowRightOutlined /></Col> }
-                                { transaction.type === 'evm' && <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.to} /></Col> }
+                                { transaction.type === 'evm' && <Col className="logo"    xs={24} md={1} lg={1}><Jdenticon className="user-icon" size="30" value={transaction.to} /></Col> }
 
                                 { transaction.type === 'native' && transaction.name === 'Receive funds' && <Col className="value"   xs={24} md={1} lg={1}><ArrowRightOutlined /></Col> }
-                                { transaction.type === 'native' && transaction.name === 'Receive funds' && <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.to} /></Col> }
+                                { transaction.type === 'native' && transaction.name === 'Receive funds' && <Col className="logo"    xs={24} md={1} lg={1}><Jdenticon className="user-icon" size="30" value={transaction.to} /></Col> }
                             
                                 { transaction.type === 'native' && transaction.name === 'Send funds' && <Col className="value"   xs={24} md={1} lg={1}><ArrowRightOutlined /></Col> }
-                                { transaction.type === 'native' && transaction.name === 'Send funds' && <Col className="logo"    xs={24} md={2} lg={2}><Jdenticon className="user-icon" size="30" value={transaction.to} /></Col> }
+                                { transaction.type === 'native' && transaction.name === 'Send funds' && <Col className="logo"    xs={24} md={1} lg={1}><Jdenticon className="user-icon" size="30" value={transaction.to} /></Col> }
                             </Row>
                         ) : <Empty description="There are no matching entries"/>}
 
