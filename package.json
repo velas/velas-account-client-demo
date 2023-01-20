@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
-    "@velas/account-client": "0.3.2",
+    "@velas/account-client": "0.3.7",
     "@velas/web3": "^0.1.15",
     "antd": "4.16.3",
     "bignumber.js": "^9.1.0",
